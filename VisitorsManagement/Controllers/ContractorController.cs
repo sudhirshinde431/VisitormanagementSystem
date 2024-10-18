@@ -10,6 +10,8 @@ using VisitorsManagement.Models;
 using VisitorsManagement.Models.Contractor;
 using VisitorsManagement.Repository;
 
+//test comment
+
 namespace VisitorsManagement.Controllers
 {
     public class ContractorController : Controller
