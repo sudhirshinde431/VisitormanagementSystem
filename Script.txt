@@ -1,0 +1,209 @@
+USE [visitormanagent]
+GO
+/****** Object:  Table [dbo].[tbl_WPCloseReminderLog]    Script Date: 29-06-2022 13:04:32 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+alter table tbl_Users
+Add Disable BIT
+
+CREATE TABLE [dbo].[tbl_WPCloseReminderLog](
+	[Personid] [int] IDENTITY(1,1) NOT NULL,
+	[WPID] [int] NULL,
+	[SentToManager] [bit] NULL,
+	[SentToHR] [bit] NULL,
+	[SentIMS] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Personid] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[tbl_WPCloseReminderLog]  WITH CHECK ADD FOREIGN KEY([WPID])
+REFERENCES [dbo].[tbl_WP] ([WPID])
+GO
+/****** Object:  StoredProcedure [dbo].[Wpreminder]    Script Date: 29-06-2022 13:04:33 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROC [dbo].[Wpreminder]
+AS
+BEGIN
+	DECLARE @SendToHr BIT = 1
+		,@SendToIMS BIT = 1
+		,@SendToMgr BIT = 1
+		,@SendToCreator BIT = 1
+		,@FromDate DATETIME = '15 Jun 2022'
+		,@Emailtext NVARCHAR(MAX) = 'Hi User,
+		                          
+								  Below work permit request closed on {WPEndDate},
+
+								  WP No:{WPNO}
+								  Date:{Date}								  	
+                                  Work Type:{WorkType}
+								  Contractor:{Contractor}
+								  Initiated By:{InitiatedBy}
+								  Status:{Status}
+
+								  We requesting you to login ino application and take the appropriate action 
+
+								  Regards,
+								  Husqvarna (India) Products Private Limited'
+
+	SELECT Hr.EmailID AS HrEmailId
+		,IMS.EmailID AS IMSEmailId
+		,Mgr.EmailID AS ManagerEmail
+		,Creator.EmailID AS CreatorEmail
+		,WP.WPID
+		,@SendToHr AS SendToHr
+		,@SendToIMS AS SendToIMS
+		,@SendToMgr AS SendToMgr
+		,@SendToCreator AS SendToCreator
+	INTO #EmailToSent
+	FROM tbl_WP WP
+	LEFT JOIN tbl_WPCloseReminderLog R ON WP.WPID = R.WPID
+	LEFT JOIN tbl_Users Hr ON WP.HRId = Hr.UserID
+	LEFT JOIN tbl_Users IMS ON WP.IMSId = IMS.UserID
+	LEFT JOIN tbl_Users Mgr ON WP.FinalId = Mgr.UserID
+	LEFT JOIN tbl_Users Creator ON WP.CreatedBy = Creator.UserID
+	WHERE WP.WorkEndDate =DATEADD(day, -1, CAST(GETDATE() AS date))
+		--AND WP.WorkStartDate >= @FromDate
+		AND R.WPID IS NULL
+
+	DECLARE @C_HrEmailId NVARCHAR(100)
+		,@C_IMSEmailId NVARCHAR(100)
+		,@C_ManagerEmail NVARCHAR(100)
+		,@C_CreatorEmail NVARCHAR(100)
+		,@C_WPID BIGINT
+		,@C_SendToHr BIT
+		,@C_SendToIMS BIT
+		,@C_SendToMgr BIT
+		,@C_EmailText NVARCHAR(max)
+		,@C_SendToCreator BIT
+		,@EmailSubject NVARCHAR(100) = 'Notification to close Work permit'
+		,@EmailProfile NVARCHAR(100) = 'Notifications'
+
+	DECLARE db_cursor CURSOR
+	FOR
+	SELECT HrEmailId
+		,IMSEmailId
+		,ManagerEmail
+		,CreatorEmail
+		,WPID
+		,SendToHr
+		,SendToIMS
+		,SendToMgr
+		,SendToCreator
+	FROM #EmailToSent
+
+	OPEN db_cursor
+
+	FETCH NEXT
+	FROM db_cursor
+	INTO @C_HrEmailId
+		,@C_IMSEmailId
+		,@C_ManagerEmail
+		,@C_CreatorEmail
+		,@C_WPID
+		,@C_SendToHr
+		,@C_SendToIMS
+		,@C_SendToMgr
+		,@C_SendToCreator
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		SET @C_EmailText = @Emailtext
+		SET @C_EmailText = REPLACE(@C_EmailText, '{WPNO}', @C_WPID)
+		SET @C_EmailText = REPLACE(@C_EmailText, '{Date}', (
+					SELECT convert(CHAR(11), WPDate, 106)
+					FROM tbl_WP
+					WHERE WPID = @C_WPID
+					))
+		SET @C_EmailText = REPLACE(@C_EmailText, '{WorkType}', (
+					SELECT WPType
+					FROM tbl_WP
+					WHERE WPID = @C_WPID
+					))
+		SET @C_EmailText = REPLACE(@C_EmailText, '{Contractor}', (
+					SELECT NAME
+					FROM tbl_WP
+					INNER JOIN tbl_ContractorMaster ON tbl_WP.ContractorId = tbl_ContractorMaster.ContractorId
+					WHERE WPID = @C_WPID
+					))
+		SET @C_EmailText = REPLACE(@C_EmailText, '{Status}', (
+					SELECT STATUS
+					FROM tbl_WP
+					WHERE WPID = @C_WPID
+					))
+
+						SET @C_EmailText = REPLACE(@C_EmailText, '{WPEndDate}', (
+					SELECT   convert(CHAR(11), WorkEndDate, 106) 
+					FROM tbl_WP
+					WHERE WPID = @C_WPID
+					))
+
+
+
+
+					
+					select @C_EmailText
+
+		IF isnull(@C_SendToHr, '') <> ''
+			AND isnull(@C_HrEmailId, '') <> ''
+		BEGIN
+			EXEC sp_send_dbmail @profile_name = @EmailProfile
+				,@recipients = @C_HrEmailId
+				,@subject = @EmailSubject
+				,@body = @Emailtext
+		END
+		IF isnull(@C_SendToIMS, '') <> ''
+			AND isnull(@C_IMSEmailId, '') <> ''
+		BEGIN
+			EXEC sp_send_dbmail @profile_name = @EmailProfile
+				,@recipients = @C_IMSEmailId
+				,@subject = @EmailSubject
+				,@body = @Emailtext
+		END
+
+		IF isnull(@C_SendToMgr, '') <> ''
+			AND isnull(@C_ManagerEmail, '') <> ''
+		BEGIN
+			EXEC sp_send_dbmail @profile_name = @EmailProfile
+				,@recipients = @C_ManagerEmail
+				,@subject = @EmailSubject
+				,@body = @Emailtext
+		END
+			IF isnull(@C_SendToCreator, '') <> ''
+			AND isnull(@C_CreatorEmail, '') <> ''
+		BEGIN
+			EXEC sp_send_dbmail @profile_name = @EmailProfile
+				,@recipients = @C_CreatorEmail
+				,@subject = @EmailSubject
+				,@body = @Emailtext
+		END
+
+		INSERT INTO tbl_WPCloseReminderLog(WPID,	SentToManager,	SentToHR,	SentIMS)
+		SELECT @C_WPID,1,1,1
+
+
+		FETCH NEXT
+		FROM db_cursor
+		INTO @C_HrEmailId
+			,@C_IMSEmailId
+			,@C_ManagerEmail
+			,@C_CreatorEmail
+			,@C_WPID
+			,@C_SendToHr
+			,@C_SendToIMS
+			,@C_SendToMgr
+			,@C_SendToCreator
+	END
+
+	CLOSE db_cursor
+
+	DEALLOCATE db_cursor
+END
+GO

@@ -1,0 +1,261 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<body>
+
+    <div class="mt-1" id="ContractorCtrl" ng-controller="ContractorCtrl" ng-cloak>
+
+        <div class="row">
+            <div class="col-6 w-100 d-inline-flex">
+                <h3 style="color:#002454"><b>Contractor Master</b> </h3> <a style="font-size:35px; cursor:pointer;" ; ng-click="getAllContractor()"><i class="bx bx-refresh"></i></a>
+            </div>
+            <div class="col-2">
+                <a ng-show="IsAccessable('ReadWP')" title="Work Permit" href="@Url.Action("Index", "WP")" class="btn btn-link float-right">
+                    Work Permit
+                </a>
+            </div>
+            <div class="col-3 w-100" ng-show="showTable">
+                <input type="text" class="form-control" style="width:100%;" ng-model="searchFilter" placeholder="Search.." />
+                @*<button class="btn btn-primary form-control" style="background-color:#002454; border-radius:4px; width:40px; margin-bottom:4px !important;" type="button" ng-click="SearchContractor()"><i class='bx bx-search-alt-2'></i></button>*@
+            </div>
+            <div class="col-1 w-100" ng-show="showTable">
+                <input type="button" id="btnaddnewContractor" class="btn btn-local float-right" data-toggle="modal" data-target="#exampleModal" value="Add New" ng-click="AddNewRecord()" />
+            </div>
+
+        </div>
+
+        <div class="row" ng-show="showTable">
+            <div class="col-12" style="height:75vh;">
+                <div class="freeze-table" style="width:100%; height:100%;">
+                    <table id="tableParams" show-filter="false" class="table table-bordered bordered table-condensed datatable" ng-table="tableParams">
+                        <tr ng-repeat="details in $data| filter:searchFilter">
+                            <td class="s25" data-title="'Contractor Name'" sortable="'Name'" ng-bind="details.Name" ng-attr-title="{{details.Name}}"></td>
+                            <td class="s25" data-title="'License Details'" sortable="'LicenseDetails'" ng-bind="details.LicenseDetails" ng-attr-title="{{details.LicenseDetails}}"></td>
+                            <td class="s20" data-title="'Contact Person Name'" sortable="'ContactPersonName'" ng-bind="details.ContactPersonName" ng-attr-title="{{details.ContactPersonName}}"></td>
+                            <td class="s20" data-title="'Contact Person Mobile No.'" sortable="'ContactPersonMobileNo'" ng-bind="details.ContactPersonMobileNo" ng-attr-title="{{details.ContactPersonMobileNo}}"></td>
+                            <td class="s5" data-title="'IsActive'" sortable="'IsActive'" ng-bind="details.IsActive" ng-attr-title="{{details.IsActive}}"></td>
+                            <td data-title="'View'" class="s5">
+                                <a href="" class="btn btn-link" ng-click="EditDetails(details.ContractorId)" title="View"> View </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container border" ng-show="!showTable">
+            <div class="modal-body">
+                <form name="checkinAppointment">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label class="float-left">Name</label>
+                                <input type="text" maxlength="200" ng-model="ContractorModel.Name" class="form-control" required placeholder="Enter Name" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Email ID</label>
+                                <input type="text" ng-model="ContractorModel.EmailId" maxlength="80" class="form-control" placeholder="Enter Contractor Email Id" />
+                            </div>
+                        </div>
+                        <div class="col-4"></div>
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label class="float-left">License Details</label>
+                                <input type="text" maxlength="500" style="max-width:100%;" ng-model="ContractorModel.LicenseDetails" class="form-control" required placeholder="License Details" />
+                            </div>
+                        </div>
+                        <div class="col-4"></div>
+                        <div class="col-2" id="sandbox-container">
+                            <div class="form-group">
+                                <label>Issued Date</label><br />
+                                <div class="input-append date">
+                                    <input readonly type="text" placeholder="Enter Issued Date" class="datepicker form-control readonly Date" ng-model="ContractorModel.IssuiedOn"><span class="input-group-addon pl-1"><i class='far fa-calendar-alt' style='font-size:22px'></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2" id="sandbox-container">
+                            <div class="form-group">
+                                <label>Valid Till Date</label><br />
+                                <div class="input-append date">
+                                    <input readonly type="text" placeholder="Enter Valid Till Date" class="datepicker form-control readonly Date" ng-model="ContractorModel.ValidTill"><span class="input-group-addon pl-1"><i class='far fa-calendar-alt' style='font-size:22px'></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label class="float-left">Contact Person Name</label>
+                                <input type="text" maxlength="80" ng-model="ContractorModel.ContactPersonName" class="form-control" required placeholder="Enter Contact Person Name" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label class="float-left">Contact Person Mobile No.</label>
+                                <input type="text" maxlength="10" min="1" ng-model="ContractorModel.ContactPersonMobileNo" class="form-control" required placeholder="Enter Contact Person Mobile No." />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-local" ng-click="SaveContractor()">Save</button>
+                <button type="button" class="btn btn-secondary" ng-click="CloseContractor()">Close</button>
+            </div>
+            <div ng-show="showEployeeSection">
+                <div class="row">
+                    <div class="col-12">
+                        <br />
+                        <hr />
+                    </div>
+                    <div class="col-2">
+                        <h5 class="float-left">Employee Details</h5>
+                    </div>
+                    <div class="col-4 d-inline-flex pt-2 pb-2">
+                        <input type="file" name="file" class="pt-1" id="fileUpload" style="margin-bottom:4px !important;" ng-model="selectedFile"
+                               onchange="angular.element(this).scope().UploadFile(this.files)" />
+                        <input type="button" value="Upload" class="btn btn-primary" ng-disabled="!EmployeeDetailsFileForUpload" style="margin-bottom:4px !important;"
+                               ng-click="ParseExcelDataAndSaveEmployeeDetails()" />
+                        <a href="~/Template/Contractor Employee Data.xlsx" class="btn btn-link" target="_blank">Download Template</a>
+                    </div>
+                    <div class="col-6">
+                        <input type="button" class="btn btn-local float-right" data-toggle="modal" data-target="#employeeModal" value="Add New Employee" ng-click="AddNewEmployee()" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <table id="tableParams" show-filter="false" class="table table-bordered bordered table-condensed datatable" ng-table="tableParamsEmployee">
+                            <tr ng-repeat="details in employeeDetails">
+                                <td class="s5" data-title="'Employee Name'" sortable="'EmployeeName'" ng-bind="details.EmployeeName" ng-attr-title="{{details.EmployeeName}}"></td>
+                                <td class="s5" data-title="'PF Details'" sortable="'PFInsuranceDetails'" ng-bind="details.PFInsuranceDetails" ng-attr-title="{{details.PFInsuranceDetails}}"></td>
+                                <td class="s5" data-title="'PF/Insurance File'">
+                                    <a href="" class="btn btn-link" ng-if="details.PFInsuranceFile" ng-click="getEmployeeFile(details.EmployeeId,'PF')" title="View"> View File </a>
+                                    <span ng-if="!details.PFInsuranceFile">File not available</span>
+                                </td>
+                                <td class="s10" data-title="'ESIC Details'" sortable="'ESICDetails'" ng-bind="details.ESICDetails" ng-attr-title="{{details.ESICDetails}}"></td>
+                                <td class="s5" data-title="'ESIC File'">
+                                    <a href="" class="btn btn-link" ng-if="details.ESICFile" ng-click="getEmployeeFile(details.EmployeeId,'ESIC')" title="View"> View File </a>
+                                    <span ng-if="!details.ESICFile">File not available</span>
+                                </td>
+                                <td ng-if="!WorkPermitModel.IsSubmitted" data-title="'View'" class="s5">
+                                    <a href="" class="btn btn-link" ng-click="EditEmployeeDetails(details.EmployeeId)" title="View"> View </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="employeeModal" tabindex="-1" role="dialog" style="text-align: -webkit-center;" aria-labelledby="checkinModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" style="width:70%;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add New Employee</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form name="checkinAppointment">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="float-left">Employee Name</label>
+                                        <div class="form-group">
+                                            <input type="text" ng-model="EmployeeModel.EmployeeName" class="form-control" required placeholder="Enter Employee Name" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6"></div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="float-left">PF / Insurance Details</label>
+                                        <input type="text" ng-model="EmployeeModel.PFInsuranceDetails" class="form-control" required placeholder="Enter PF/Insurance Details" />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="float-left">PF / Insurance File</label><br />
+                                        <input class="form-control" accept="application/pdf" type="file" ngf-select="UploadPFFile($files)" id="sourcePF" ng-required="!EmployeeModel.PFInsuranceFile" />
+                                        <a style="padding-left: 5px;" class="btn btn-link pl-0" ng-if="EmployeeModel.PFInsuranceFile" href="{{DocBoxModel.FileURL}}" title="Downlaod File" target="_blank"><i class="fas fa-download"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="float-left">ESIC Details</label>
+                                        <input type="text" ng-model="EmployeeModel.ESICDetails" class="form-control" required placeholder="Enter ESIC Details" />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="float-left">ESIC File</label><br />
+                                        <input class="form-control" accept="application/pdf" type="file" ngf-select="UploadESICFile($files)" id="sourceESIC" ng-required="!EmployeeModel.ESICFile" />
+                                        <a style="padding-left: 5px;" class="btn btn-link pl-0" ng-if="EmployeeModel.ESICFile" href="{{DocBoxModel.FileURL}}" title="Downlaod File" target="_blank"><i class="fas fa-download"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-local" ng-click="SaveEmployee()">Save</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="iframeModal" tabindex="-1" role="dialog" style="text-align: -webkit-center;" aria-labelledby="iframeModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog" role="document" style="width:70%; height:90%;">
+                <div class="modal-content" style="width:70%; height:100%;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe id="iframeShowFile" style="height: 100%;width: 100%;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $('#sandbox-container .input-append.date').datepicker({
+            format: "dd-M-yyyy",
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            calendarWeeks: true,
+        });
+
+        var freezeTable = new FreezeTable('.freeze-table', {
+            'scrollable': true,
+        });
+
+        $(document).ready(function () {
+
+            if ("@ViewBag.Id" == "add") {
+                setTimeout(explode, 1000);
+
+            }
+            else if ("@ViewBag.Id" > 0) {
+                setTimeout(EditOnPage, 1000);
+               
+            }
+        })
+        function EditOnPage() {
+            angular.element(document.getElementById('ContractorCtrl')).scope().EditDetails("@ViewBag.Id");
+        }
+        function explode() {
+            angular.element('#btnaddnewContractor').triggerHandler('click');
+        }
+
+    </script>
+
+</body>
+

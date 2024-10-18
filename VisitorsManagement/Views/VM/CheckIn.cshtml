@@ -1,0 +1,155 @@
+﻿
+@{
+    Layout = "";
+    ViewBag.Title = "Appointment Check In";
+}
+<link rel="stylesheet" href="~/Content/bootstrap.css" />
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.RenderFormat(DB.SiteKeys.ScriptVersion, "~/bundles/angularjs")
+<script src="~/Scripts/ng-table-to-csv.min.js"></script>
+<script src="~/Scripts/angucomplete-alt.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.17/angular-filter.min.js" integrity="sha512-f2q5tYQJ0pnslHkuVw7tm7GP7E0BF1YLckJjgLU5z4p1vNz78Jv+nPIEKtZerevbt/HwEfYnRrAo9U3u4m0UHw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style>
+    .header {
+        width: 100%;
+        height: 3rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        background-color: #002454;
+        z-index: 100;
+        transition: .5s;
+        color: #ffffff;
+    }
+
+    .header_toggle {
+        color: #ffffff;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .header_img {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+        .header_img img {
+            width: 40px;
+        }
+</style>
+
+<header class="header" id="header">
+    <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
+    <div style="width: 100%;">
+        <img src="~/Content/Images/logo.png">
+    </div>
+</header>
+<div class="text-center" style="padding-top:2rem;">
+    <h3 style="color:#002454"> Husqvarna (India) Products Private Limited</h3>
+</div>
+<div ng-app="visitorsManagement" ng-controller="ctrlCheckIn" class="container">
+    <div class="overlay">
+        <div id="loading-img"></div>
+    </div>
+    <input type="hidden" id="appointmentId" value="@ViewBag.AppointmentId" />
+    <toaster-container toaster-options="{'position-class': 'toast-bottom-right', 'progressBar': 'true' , 'close-button': true, 'body-output-type': 'trustedHtml', 'showDuration': '400', 'hideDuration': '200',}"></toaster-container>
+
+    <div class="row w-100 containerDiv" style="font-size: 18px;">
+        @*<div class="col-1"></div>*@
+        <div class="col-12 mb-3">
+            <h3 style="color: var(--first-color);"> Appointment Details </h3>
+
+            <hr />
+        </div>
+        <div class="col-3 mt-1">Appointment Date :</div>
+        <div class="col-3"> {{ CheckinModel.Date }} </div>
+        <div class="col-3 mt-1">Visitor's Name :</div>
+        <div class="col-3"> {{ CheckinModel.VisitorName }} </div>
+        <div class="col-3 mt-1">Mobile No. :</div>
+        <div class="col-3"> {{ CheckinModel.VisitorPhoneNumber }} </div>
+        <div class="col-3 mt-1">Email Id :</div>
+        <div class="col-3"> {{ CheckinModel.VisitorsEmails }} </div>
+        <div class="col-3 mt-1">Representing Company :</div>
+        <div class="col-3"> {{ CheckinModel.RepresentingCompany }} </div>
+        <div class="col-12">
+            <br />
+        </div>
+    </div>
+
+    <div class="row w-100 containerDiv" style="font-size: 18px;" ng-if="StatusMedia.Open == CheckinModel.Status">
+        <div class="col-12">
+            <form name="checkinAppointment">
+                <div class="row w-100">
+                    <div class="col-3">
+                        <label class="float-left">Number of Person's</label>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <input type="number" min="1" ng-model="CheckinModel.NumberOfPerson" class="form-control" required placeholder="Enter Number of Person to visit" />
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label class="float-left">Visiting Pass No.</label>
+
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <input type="text" ng-model="CheckinModel.GatePassNumber" class="form-control" required placeholder="Enter Visiting Pass No." />
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label class="float-left">Material Details</label>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <input type="text" ng-model="CheckinModel.MaterialDetails" class="form-control" required placeholder="Enter Material Details" />
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label class="float-left">Vehicle Details</label>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <input type="text" ng-model="CheckinModel.VehicleDetails" class="form-control" required placeholder="Enter Vehicle Dettails" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 mb-2">
+            <hr />
+            <button type="button" ng-if="StatusMedia.Open == CheckinModel.Status" class="btn btn-success" ng-click="checkInAppointment()">Check In</button>
+        </div>
+    </div>
+    <div class="row w-100 containerDiv" style="font-size: 18px;" ng-if="StatusMedia.CheckIn == CheckinModel.Status">
+        <div class="col-12">
+            <form name="checkinAppointment">
+                <div class="row w-100">
+                    <div class="col-3">
+                        <label class="float-left">Remark</label>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <input type="text" min="1" ng-model="CheckinModel.Narration" class="form-control" required placeholder="Enter Remark" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 mb-2">
+            <hr />
+            <button type="button" ng-if="StatusMedia.CheckIn == CheckinModel.Status" class="btn btn-danger" ng-click="checkOutAppointment()">Check Out</button>
+        </div>
+    </div>
+</div>

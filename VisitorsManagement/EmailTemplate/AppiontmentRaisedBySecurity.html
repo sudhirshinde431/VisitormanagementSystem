@@ -1,0 +1,125 @@
+﻿<table>
+    <tr>
+        <td class="bg_white">
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #fff;padding: 1em 1.75em; padding-bottom: 0; ">
+                <!--Intro-->
+
+                <tr>
+                    <td style="margin:0;font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;"><strong style="color:#131313;font-family: Arial, Helvetica, sans-serif;font-size: 13px;">Hello {{VisitingPersonName}}, <br /></strong></td>
+                </tr>
+                <tr><td style="height:15px;">&nbsp;</td></tr>
+                <tr>
+                    <td style="margin:0;font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 16px;"><strong style="color:#131313;font-family: Arial, Helvetica, sans-serif;font-size: 16px;">Security has raised an appointment,</strong></td>
+                </tr>
+                <tr><td style="height:5px;">&nbsp;</td></tr>
+                <tr>
+                    <td class="" style="font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;">Appointment Date:- <b>{{DateDetail}}</b></td>
+                </tr>
+                <tr>
+                    <td class="" style="">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="" style="font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;">Appointment No:- <b>{{AppointmentNo}}</b></td>
+                </tr>
+                <tr>
+                    <td class="" style="">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="" style="font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;">Visitor's Name:- <b>{{VisitorsName}}</b></td>
+                </tr>
+                <tr>
+                    <td class="" style="">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="" style="font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;">Purpose to Visit:- <b>{{PurposeOfVisit}}</b></td>
+                </tr>
+                <tr>
+                    <td class="" style="">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="" style="font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;">Company Name:- <b>{{CompanyName}}</b></td>
+                </tr>
+                <tr><td style="height:5px;">&nbsp;</td></tr>
+                <tr>
+                    <td class="" style="font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;">Remark:- <b>{{RemarkDetail}}</b></td>
+                </tr>
+                <tr><td style="height:5px;">&nbsp;</td></tr>
+                
+                <tr><td style="height:5px;">&nbsp;</td></tr>
+                <tr>
+                    <td class="" style="font-family: Arial, Helvetica, sans-serif;color:#131313;font-size: 13px;">
+                        <!--<form method="GET" id="frmApprove" action="" target="sub">
+                            <input type="submit" value="updoot" style="padding: 5px;background: green;color: #fff;min-width: 80px;" />
+                        </form>
+                        <iframe style="visibility: hidden;" id="subframe" name="sub">
+                        </iframe>
+                        <a onclick="reject()" href="javascript:void(0);">Cancel</a>-->
+                        <a style="padding: 5px;background: green;color: #fff;min-width: 80px;" href="{{approveRejectURL}}">Approve / Reject Appointment</a>
+                        <!--<a href="{{rejectURL}}">Reject</a>
+                        <input type="button" value="Approve" onclick="approve()" style="padding: 5px;background: green;color: #fff;min-width: 80px;">
+                        <input type="button" value="Cancel" onclick="reject()" style="padding: 5px;background: gray;color: #fff;min-width: 80px;">-->
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="margin-top:15px;width:500px;">
+                            <table>
+                                <tr>
+                                    <td style="width:30%;">
+                                        <!--<img height="65" src="../Content/Images/MiniLogo.jpg" />-->
+                                        <img src="cid:MiniLogo">
+                                    </td>
+                                    <td style="font-size:12px;color:#183259">
+                                        Best Regards,<br />
+                                        Husqvarna (India) Products Private Limited.<br />
+                                        G No 312A/B266269/270/276 Hissa no 12,P-9 to15,
+                                        Tehsil Gondedumala, Igatpuri Nashik, Maharashtra, India – 422403
+                                        <span style="color:#1a1aff"> www.husqvarnacp.in Facebook | LinkedIn  | Instagram  | Youtube</span>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="" style="">&nbsp;</td>
+                </tr>
+            </table>
+</table>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+
+$('#frmApprove').submit(function(e){
+    e.preventDefault();
+    $.ajax({
+        url: 'http://localhost:1055/api/VM/ApproveRejectAppointment?appointmentId=13&status=Open',
+        type: 'get',
+        data:$('#myForm').serialize(),
+        success:function(){
+            // Whatever you want to do after the form is successfully submitted
+        }
+    });
+});
+function approve() {
+  // send Ajax request to the track URL
+
+  var xmlHttp = new XMLHttpRequest();
+  alert('approve');
+    xmlHttp.open( "GET", 'http://localhost:1055/api/VM/ApproveRejectAppointment?appointmentId=13&status=Open', false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+    //location.href = 'http://localhost:1055/api/VM/ApproveRejectAppointment?appointmentId=13&status=Open';
+}
+function reject() {
+  // send Ajax request to the track URL
+
+  alert('reject');
+  var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", '{{rejectURL}}', false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+    //location.href = 'http://localhost:1055/api/VM/ApproveRejectAppointment?appointmentId=13&status=Open';
+
+}
+</script>

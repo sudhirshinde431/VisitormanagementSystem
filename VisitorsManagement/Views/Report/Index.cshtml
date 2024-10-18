@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<body>
+    <div ng-controller="CtrlReports" class="mt-1 p-5" ng-cloak>
+        <div class="row">
+            <div class="col-8 w-100 d-inline-flex">
+                <h3 style="color:#002454"><b>Reports</b> </h3> <a style="font-size:35px; cursor:pointer;"></a>
+            </div>
+        </div>
+        <div class="row" ng-if="isAllowedToShow">
+            <div class="col-6">
+                <div class="form-group">
+                    <label>Employee</label>
+                    <select class="form-control selectpicker show-tick" title="Select Employee" data-live-search="true" id="ddlEmployee"
+                            data-size="8" required>
+                        <option value='0' selected>ALL</option>
+                        <option ng-repeat="employee in employeeMaster" value='{{ employee.ValueInt }}'>{{ employee.Text }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2" id="sandbox-container">
+                <div class="form-group">
+                    <label>From Date</label><br />
+                    <div class="input-append date">
+                        <input readonly type="text" placeholder="Enter From Date" class="datepicker form-control readonly Date" ng-model="ReportModel.FromDate"><span class="input-group-addon pl-1"><i class='far fa-calendar-alt' style='font-size:22px'></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2" id="sandbox-container">
+                <div class="form-group">
+                    <label>To Date</label><br />
+                    <div class="input-append date">
+                        <input readonly type="text" placeholder="Enter To Date" class="datepicker form-control readonly Date" ng-model="ReportModel.ToDate"><span class="input-group-addon pl-1"><i class='far fa-calendar-alt' style='font-size:22px'></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-local" ng-click="downloadReport()">Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#sandbox-container .input-append.date').datepicker({
+            format: "dd-M-yyyy",
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            calendarWeeks: false,
+        });
+    </script>
+</body>

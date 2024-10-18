@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/Content/Images/favicon.ico">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @*@Scripts.Render("~/bundles/angularjs")*@
+    @Scripts.RenderFormat(DB.SiteKeys.ScriptVersion, "~/bundles/angularjs")
+    @*<link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">*@
+    <script src="~/Scripts/ng-table-to-csv.min.js"></script>
+    <script src="~/Scripts/angucomplete-alt.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.17/angular-filter.min.js" integrity="sha512-f2q5tYQJ0pnslHkuVw7tm7GP7E0BF1YLckJjgLU5z4p1vNz78Jv+nPIEKtZerevbt/HwEfYnRrAo9U3u4m0UHw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+ 
+    @*<link href="~/Content/angucomplete-alt.css" rel="stylesheet" />*@
+</head>
+<body ng-app="visitorsManagement" id="body-pd">
+    <div class="overlay">
+        <div id="loading-img"></div>
+    </div>
+    <toaster-container 
+     toaster-options="{'position-class': 'toast-top-right', 'progressBar': 'true' , 'close-button': true, 'body-output-type': 'trustedHtml', 'showDuration': '300', 'hideDuration': '200', 'body-output-type': 'trustedHtml'}"></toaster-container>
+
+
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </div>
+        <div class="container body-content">*@
+    <header class="headerMain" id="header">
+         <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div> 
+        <div style="width: 75%;">
+            <!-- <h3 class="float-left pl-1">Huqsvarna Group</h3> -->
+            <img src="~/Content/Images/logo.png">
+        </div>
+
+        <div class="user-signout">
+            <!-- <img src="https://i.imgur.com/hczKIze.jpg" alt="">  -->
+            <div style="float: right; width:100%;">
+                <a style="float:right;" title="Sign Out" href="@Url.Action("logOut", "Login")">
+                    <i style="color:white;" class='bx bx-log-out bx-rotate-180 nav_icon'></i>
+                </a><h6 style="float:right; margin-bottom:0px;" class="pr-1">@Session["UserFullName"]</h6> 
+            </div>
+            <br />
+            <div style="float: right; width:100%;">
+                <h6 style="float:right; margin-right: 25px;">[ @Session["RoleName"] ]</h6>
+            </div>
+        </div>
+    </header>
+    <div ng-controller="CtrlNavBar" class="l-navbar" id="nav-bar">
+        <nav class="navHeader">
+            <div>
+                <a style="visibility:hidden" href="/Dashboard/Index" class="nav_logo">
+                    <i class='bx bx-home nav_logo-icon'></i> <span class="nav_logo-name"></span>
+                </a>
+                <div class="nav_list">
+                    <a title="Dashboard" href="@Url.Action("Index", "Dashboard")" class="nav_link active">
+                        <i class='bx bx-home nav_icon'></i>
+                        <span class="nav_name">Dashboard</span>
+                    </a>
+                    <a title="Visitor's Management" href="@Url.Action("Index", "VM")" class="nav_link">
+                        <i class='bx bxs-user-badge  nav_icon'></i>
+                        <span class="nav_name">Visitors Management</span>
+                    </a>
+                    <a ng-if="IsAccessable('ReadWP')" title="Work Permit" href="@Url.Action("Index", "WP")" class="nav_link">
+                        <i class='bx bx-id-card nav_icon'></i> <span class="nav_name">Work Permit</span>
+                    </a>
+                    <a ng-if="isSuperAdmin" title="User Management" href="@Url.Action("Index", "Users")" class="nav_link">
+                        <i class='bx  bx-user nav_icon'></i> <span class="nav_name">User Management</span>
+                    </a>
+                    <a title="Visitor's Report" href="@Url.Action("Index", "Report")" class="nav_link">
+                        <i class='bx bxs-report nav_icon'></i>
+                        <span class="nav_name">Visitors Report</span>
+                    </a>
+                    <a title="Change Password" href="@Url.Action("ChangePassword", "Login")" class="nav_link">
+                        <i class='bx bx-lock nav_icon'></i> <span class="nav_name">Change Password</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- <p (window:beforeunload)="doBeforeUnload()" (window:unload)="doUnload()">
+    </p> -->
+    <!--Container Main start-->
+    <div class="containerDiv">
+        @RenderBody()
+        <hr />
+        @*<footer>
+                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </footer>*@
+    </div>
+
+    @*@Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")*@
+    @RenderSection("scripts", required: false)
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+
+            const showNavbar = (toggleId, navId, bodyId, headerId) => {
+                const toggle = document.getElementById(toggleId),
+                  nav = document.getElementById(navId),
+                  bodypd = document.getElementById(bodyId),
+                  headerpd = document.getElementById(headerId)
+                // Validate that all variables exist
+                if (toggle && nav && bodypd && headerpd) {
+                    toggle.addEventListener('click', () => {
+                        // show navbar
+                        nav.classList.toggle('shownav')
+                        // change icon
+                        toggle.classList.toggle('bx-x')
+                        // add padding to body
+                        bodypd.classList.toggle('body-pd')
+                        // add padding to header
+                        headerpd.classList.toggle('body-pd')
+                    })
+                }
+            }
+
+            showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header')
+
+            /*===== LINK ACTIVE =====*/
+            const linkColor = document.querySelectorAll('.nav_link')
+
+            function colorLink() {
+                if (linkColor) {
+                    linkColor.forEach(l => l.classList.remove('active'))
+                    this.classList.add('active')
+                }
+            }
+            linkColor.forEach(l => l.addEventListener('click', colorLink))
+
+            // Your code to run since DOM is loaded and ready
+        });
+    </script>
+</body>
+</html>

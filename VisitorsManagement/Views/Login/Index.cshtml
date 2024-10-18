@@ -1,0 +1,312 @@
+﻿
+@{
+    Layout = "";
+    ViewBag.Title = "";
+}
+
+<!doctype html>
+<html lang="en" >
+<head>
+
+    <style>
+        .centerP {
+            position: absolute;
+            top: 52%;
+            left: 30%;
+            transform: translate(-50%,-50%);
+            width: 25%;
+            background: #002454;
+            height: 48%;
+            margin: 5px;
+            box-shadow: 0 0.5rem 1rem 0 rgb(0 0 0 / 70%);
+            min-width: 250px;
+            min-height: 260px;
+        }
+
+        .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 93%;
+            background: white;
+            border-radius: 10px;
+            height: 93%;
+        }
+
+            .center h3 {
+                text-align: center;
+                padding: 0 0 5px 0;
+                border-bottom: 1px solid silver;
+            }
+
+            .center form {
+                padding: 0 20px;
+                box-sizing: border-box;
+            }
+
+        form .txt_field {
+            position: relative;
+            border-bottom: 2px solid #adadad;
+            margin: 30px 0;
+        }
+
+        .txt_field input {
+            width: 100%;
+            padding: 0 5px;
+            height: 40px;
+            font-size: 16px;
+            border: none;
+            background: none;
+            outline: none;
+        }
+
+        .txt_field label {
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            color: #adadad;
+            transform: translateY(-50%);
+            font-size: 16px;
+            pointer-events: none;
+            transition: .5s;
+        }
+
+        .txt_field span::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #2691d9;
+            transition: .5s;
+        }
+
+        .txt_field input:focus ~ label,
+        .txt_field input:valid ~ label {
+            top: -5px;
+            color: #2691d9;
+        }
+
+        .txt_field input:focus ~ span::before,
+        .txt_field input:valid ~ span::before {
+            width: 100%;
+        }
+
+        .pass {
+            margin: -5px 0 20px 5px;
+            color: #a6a6a6;
+            cursor: pointer;
+        }
+
+            .pass:hover {
+                text-decoration: underline;
+            }
+
+        .loginButton {
+            width: 100%;
+            height: 35px;
+            border: 1px solid;
+            background: #2691d9;
+            border-radius: 25px !important;
+            font-size: 18px;
+            color: #e9f4fb;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        .form-control {
+            padding: .200rem .55rem !important;
+        }
+
+        .loginButton:hover {
+            border-color: #2691d9;
+            transition: .5s;
+        }
+
+        .header {
+            width: 100%;
+            height: 3rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            background-color: #002454;
+            z-index: 100;
+            transition: .5s;
+            color: #ffffff;
+            ;
+        }
+
+        .header_toggle {
+            color: #ffffff;
+            ;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .header_img {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+            .header_img img {
+                width: 40px;
+            }
+
+        #loading-img {
+            background: url('~/../Content/Images/Loader1.gif') center center no-repeat;
+            /*background: url('../../Content/Image/loader7.gif') center center no-repeat;*/
+            height: 100%;
+            z-index: 20;
+        }
+
+        .overlay {
+            background: rgba(204,204,204,0.89);
+            /*display: none;*/
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.5;
+            height: 100vh;
+            width: 100%;
+            z-index: 999999;
+        }
+
+        .setBG {
+            background-image: url('~/../Content/Images/BG.png');
+            background-repeat: no-repeat;
+            background-position: 85% 80%;
+            background-size: 580px 390px;
+        }
+    </style>
+
+    <title>Visitor's Management</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/Content/Images/favicon.ico">
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+    <link rel="stylesheet" href="~/Content/Design/css/style.css" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    @*<script src="~/Angular/LoginController.js"></script>*@
+
+    @Scripts.RenderFormat(DB.SiteKeys.ScriptVersion, "~/bundles/loginscript")
+    @Scripts.RenderFormat(DB.SiteKeys.ScriptVersion, "~/bundles/bootstrap")
+</head>
+<body class="setBG" ng-app="myLoginApp">
+    <div class="overlay">
+        <div id="loading-img"></div>
+    </div>
+    <input type="hidden" id="appointmentId" value="@ViewBag.appointmentId" />
+    <input type="hidden" id="previousPage" value="@ViewBag.RedirectPage" />
+    <header class="header" id="header">
+        <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
+        <div style="width: 100%;">
+            <!-- <h3 class="float-left pl-1">Huqsvarna Group</h3> -->
+            <img src="~/Content/Images/logo.png">
+        </div>
+
+        @*<div class="user-signout">
+                <div style="display: flex; float: right;">
+                    <h6 class="pr-1">Prashant Kurde</h6> <a title="Sign Out" href="#">
+                        <i style="color:white;" class='bx bx-log-out bx-rotate-180 nav_icon'></i>
+                    </a>
+                </div>
+            </div>*@
+    </header>
+    <div class="text-center" style="padding-top:5rem;">
+        <h3 style="color:#002454"> Husqvarna (India) Products Private Limited</h3>
+    </div>
+    <div ng-controller="myLoginCtrl" class="centerP">
+        <div class="center">
+            <h3>Login</h3>
+            <form name="frmLogin" class="form-horizontal">
+                <div class="form-group m-b-20 row">
+                    <div class="col-12">
+                        <label for="emailaddress">User Name</label>
+                        <input class="form-control" type="text" id="emailaddress" name="username" ng-required="true" ng-model="UserName" placeholder="Enter user name">
+                    </div>
+                </div>
+                <div class="form-group row m-b-20">
+                    <div class="col-12">
+
+                        <label for="password">Password</label>
+                        <input class="form-control" type="password" ng-required="true" ng-model="password" id="password" placeholder="Enter your password">
+                    </div>
+                </div>
+                <hr class="my-2">
+
+                <div class="form-group row text-center m-t-10 mb-0">
+                    <div class="col-12">
+                        <button class="btn btn-primary loginButton" @*ng-disabled="frmLogin.$invalid"*@ ng-click="UserLogin()" type="submit">Sign In</button>
+                    </div>
+                </div>
+                <div class="form-group row mb-1">
+                    <div class="col-12">
+                        <div class="checkbox checkbox-success">
+                            <a href="#" class="text-muted float-right" ng-click="forgotPassword()"><small>Forgot your password?</small></a>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-2" ng-show="msg">
+                <div class="alert alert-danger p-2" ng-show="msg">{{msg}}</div>
+            </form>
+        </div>
+    </div>
+
+    <div ng-controller="sendPasswordCtrl" class="modal fade" id="mdlforgotPassword" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:50%; min-width:50%;">
+            <div class="modal-content" style="width:100%">
+                <div class="modal-body" style="max-height: 500px;">
+                    <button type="button" class="close" data-dismiss="modal">X</button>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-2"></div>
+                            <div class="col-8">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="text-center">
+
+                                            <h2 class="text-center">Forgot Password?</h2>
+                                            @*<p>You can reset your password here.</p>*@
+                                            <div class="panel-body">
+                                                <form class="form">
+                                                    <fieldset>
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon"><i class="glyphicon glyphicon-envelope color-blue"></i></span>
+
+                                                                <input id="emailInput" placeholder="Email Address" class="form-control" type="email" ng-required="true" ng-model="resetPassEmail" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input class="btn btn-lg btn-primary btn-block" value="Send My Password" type="submit" ng-click="sendPasswordMail()">
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

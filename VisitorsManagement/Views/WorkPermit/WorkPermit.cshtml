@@ -1,0 +1,245 @@
+﻿
+@{
+    ViewBag.Title = "WorkPermit";
+}
+
+<div class="mt-1" id="WorkPermitNewCtrl" ng-controller="WorkPermitNewCtrl" ng-cloak>
+
+    <div class="row">
+        <div class="col-6 w-100 d-inline-flex">
+            <h3 style="color:#002454"><b>Work Permit</b> </h3>
+        </div>
+        <div class="col-2">
+            <a ng-show="{{ showTable && isSuperAdmin }}" title="Contractor Management" href="@Url.Action("Index", "Contractor")" class="btn btn-link">
+                Contractor Management
+            </a>
+        </div>
+        <div class="col-3 w-100" style="display: -webkit-inline-box;" ng-show="showTable">
+            <input type="text" class="form-control" style="width:90%;" ng-model="searchFilter" placeholder="Search.." />
+            <button class="btn btn-primary form-control" style="background-color:#002454; border-radius:4px; width:40px; margin-bottom:4px !important;" type="button" ng-click="SearchWorkPermit()"><i class='bx bx-search-alt-2'></i></button>
+        </div>
+        <div class="col-1 w-100" ng-show="showTable">
+            <input type="button" class="btn btn-local float-right" value="Add New" ng-click="AddNewRecord()" />
+        </div>
+    </div>
+
+    <div ng-show="showTable">
+        <div class="row">
+            <div class="col-12">
+
+            </div>
+            <div class="col-12">
+                <table id="tableParams" show-filter="false" class="table table-bordered bordered table-condensed datatable" ng-table="tableParams">
+                    <tr ng-repeat="details in $data">
+                        <td class="s5" data-title="'WP No.'" sortable="'WPNO'" ng-bind="details.WPNO" ng-attr-title="{{details.WPNO}}"></td>
+                        <td class="s5" data-title="'Date'" sortable="'strWPDate'" ng-bind="details.strWPDate" ng-attr-title="{{details.strWPDate}}"></td>
+                        <td class="s5" data-title="'Work Type'" sortable="'WPType'" ng-bind="details.WPType" ng-attr-title="{{details.WPType}}"></td>
+                        <td class="s10" data-title="'Service Provider Name'" sortable="'ContractorName'" ng-bind="details.ContractorName" ng-attr-title="{{details.ContractorName}}"></td>
+                        <td class="s5" data-title="'Start Date'" sortable="'strWorkStartDate'" ng-bind="details.strWorkStartDate" ng-attr-title="{{details.strWorkStartDate}}"></td>
+                        <td class="s5" data-title="'End Date'" sortable="'strWorkEndDate'" ng-bind="details.strWorkEndDate" ng-attr-title="{{details.strWorkEndDate}}"></td>
+                        <td class="s5" data-title="'Work Location'" sortable="'WorkLocation'" ng-bind="details.WorkLocation" ng-attr-title="{{details.WorkLocation}}"></td>
+                        <td class="s5" data-title="'Initiated By'" sortable="'InitiatedByName'" ng-bind="details.InitiatedByName" ng-attr-title="{{details.InitiatedByName}}"></td>
+                        <td class="s5" data-title="'Approved By'" sortable="'ApprovedByName'" ng-bind="details.ApprovedByName" ng-attr-title="{{details.ApprovedByName}}"></td>
+                        <td class="s5" data-title="'Status'" sortable="'Status'" ng-bind="details.Status" ng-attr-title="{{details.Status}}"></td>
+                        <td data-title="'View'" class="s5">
+                            <a href="" class="btn btn-link" ng-click="EditWorkPermit(details.WPID)" title="View"> View </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div> @*Table Display*@
+    <div class="container border" ng-show="!showTable">
+        <form name="FormAppointment">
+            <div class="row border">
+                @*Work Permit Details*@
+                <div class="col-12" ng-show="WorkPermitModel.Status == WPStatus.Open">
+                    <div class="row">
+                        <div class="col-3 mt-2">
+                            <div class="form-group">
+                                <label>Work Permit No.</label>
+                                {{WorkPermitModel.WPNO}}
+                            </div>
+                        </div>
+                        <div class="col-3  mt-2" id="sandbox-container">
+                            <div class="form-group">
+                                <label>WP Date</label>
+                                <div class="input-append date">
+                                    <input ng-disabled="WorkPermitModel.IsSubmitted" type="text" placeholder="Enter Date" class="datepicker form-control readonly Date" ng-model="WorkPermitModel.WPDate"><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <div class="form-group">
+                                <label>WP Type</label>
+                                <select class="form-control selectpicker show-tick" title="Select WP Type" data-live-search="false" id="ddlWPType"
+                                        data-size="8" required>
+                                    <option ng-repeat="type in workPermitType" value='{{ type }}'>{{ type}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        @*<div class="col-3 mt-2">
+                                <div class="form-group">
+                                    <label>Unit Name</label>
+                                    <input ng-disabled="WorkPermitModel.IsSubmitted" type="text" ng-model="WorkPermitModel.Unit" class="form-control" required placeholder="Enter Unit Name" />
+                                </div>
+                            </div>*@
+                    </div>
+                    <div class="row">
+                        @*<div class="col-3">
+                                <div class="form-group">
+                                    <label>Work Location</label>
+                                    <input ng-disabled="WorkPermitModel.IsSubmitted" type="text" ng-model="WorkPermitModel.WorkLocation" class="form-control" placeholder="Enter Work Location" />
+                                </div>
+                            </div>*@
+
+                        @*<div class="col-3" id="sandbox-container">
+                            <div class="form-group">
+                                <label>Work Start Date</label>
+                                <div class="input-append date">
+                                    <input ng-disabled="WorkPermitModel.IsSubmitted" type="text" placeholder="Enter Date" class="datepicker form-control readonly Date" ng-model="WorkPermitModel.WorkStartDate"><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3" id="sandbox-container">
+                            <div class="form-group">
+                                <label>Work End Date</label>
+                                <div class="input-append date">
+                                    <input ng-disabled="WorkPermitModel.IsSubmitted" type="text" placeholder="Enter Date" class="datepicker form-control readonly Date" ng-model="WorkPermitModel.WorkEndDate"><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Initiated By</label><br />
+                                <label>{{WorkPermitModel.InitiatedByName}}</label>
+                            </div>
+                        </div>*@
+                    </div>
+                    <div class="row">
+                        @*<div class="col-8">
+                            <div class="form-group">
+                                <label>Nature of Work</label>
+                                <textarea ng-disabled="WorkPermitModel.IsSubmitted" rows="3" ng-model="WorkPermitModel.NatureOfWork" style="min-width:100%;" class="form-control" placeholder="Enter Nature of Work.."></textarea>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+                <div class="col-12 border mt-1">
+                    @*<div class="row">
+                        <div class="col-12  mt-2">
+                            <label style="font-size:20px;"><b> Contractor Details</b></label>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Contractor</label>
+                                <select ng-disabled="WorkPermitModel.IsSubmitted" class="form-control selectpicker show-tick" title="Select Contractor" onchange="setLicenseDetails()" data-live-search="true" id="ddlContractor"
+                                        data-size="8" required>
+                                    <option ng-repeat="purpose in contractorList" data-licensedetails="{{purpose.Value}}" value='{{ purpose.ValueInt }}'>{{ purpose.Text }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-9">
+                            <div class="form-group">
+                                <label>License Details</label><br />
+                                <label>{{WorkPermitModel.LicenseDetails}}</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label>Select Employee's</label>
+                            <select ng-disabled="WorkPermitModel.IsSubmitted" class="form-control selectpicker show-tick" title="Select Employee's" multiple data-live-search="true" id="ddlEmployee"
+                                    data-size="8" required>
+                                <option ng-repeat="employees in ddlEmployees" value='{{ employees.EmployeeId }}'>{{ employees.EmployeeName }}</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <input type="button" class="btn btn-local float-left mt-4" ng-if="!WorkPermitModel.IsSubmitted" value="Add Employee's" ng-click="AddEmployees()" />
+                        </div>
+                        <div class="col-12">
+                            <table id="tableParams" show-filter="false" class="table table-bordered bordered table-condensed datatable" ng-table="tableParams">
+                                <tr ng-repeat="details in employeeDetails">
+                                    <td class="s5" data-title="'Sr No.'" sortable="'SrNo'" ng-bind="details.SrNo" ng-attr-title="{{details.SrNo}}"></td>
+                                    <td class="s5" data-title="'Employee Name'" sortable="'EmployeeName'" ng-bind="details.EmployeeName" ng-attr-title="{{details.EmployeeName}}"></td>
+                                    <td class="s5" data-title="'PF Details'" sortable="'PFInsuranceDetails'" ng-bind="details.PFInsuranceDetails" ng-attr-title="{{details.PFInsuranceDetails}}"></td>
+                                    <td class="s5" data-title="'PF/Insurance File'">
+                                        <a href="" class="btn btn-link" ng-click="getEmployeeFile(details.EmployeeId,'PF')" title="View"> View File </a>
+                                    </td>
+                                    <td class="s10" data-title="'ESIC Details'" sortable="'ESICDetails'" ng-bind="details.ESICDetails" ng-attr-title="{{details.ESICDetails}}"></td>
+                                    <td class="s5" data-title="'ESIC File'">
+                                        <a href="" class="btn btn-link" ng-click="getEmployeeFile(details.EmployeeId,'ESIC')" title="View"> View File </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>*@
+                    @*Contractor Details*@
+
+                </div> @*Contractor Details*@
+                <div class="col-12 mt-2 border">
+                    @*Approver Details*@
+                    @*<div class="row">
+                        <div class="col-12  mt-2">
+                            <label style="font-size:20px;"><b> Approver Details</b></label>
+                        </div>
+                        <div class="col-4 mt-2">
+                            <div class="form-group">
+                                <label>HR Approver</label>
+                                <select ng-disabled="WorkPermitModel.IsSubmitted" class="form-control selectpicker show-tick" title="Select Contractor" data-live-search="true" id="ddlHRApprover"
+                                        data-size="8" required>
+                                    <option ng-repeat="purpose in userList" data-licensedetails="{{purpose.Value}}" value='{{ purpose.ValueInt }}'>{{ purpose.Text }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4 mt-2">
+                            <div class="form-group">
+                                <label>IMS Approver</label>
+                                <select ng-disabled="WorkPermitModel.IsSubmitted" class="form-control selectpicker show-tick" title="Select Contractor" data-live-search="true" id="ddlIMSApprover"
+                                        data-size="8" required>
+                                    <option ng-repeat="purpose in userList" data-licensedetails="{{purpose.Value}}" value='{{ purpose.ValueInt }}'>{{ purpose.Text }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4 mt-2">
+                            <div class="form-group">
+                                <label>Final Approver</label>
+                                <select ng-disabled="WorkPermitModel.IsSubmitted" class="form-control selectpicker show-tick" title="Select Contractor" data-live-search="true" id="ddlFinalApprover"
+                                        data-size="8" required>
+                                    <option ng-repeat="purpose in userList" data-licensedetails="{{purpose.Value}}" value='{{ purpose.ValueInt }}'>{{ purpose.Text }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>*@
+
+                </div> @*Approver Details*@
+
+
+
+                <div class="col-12 border mt-1">
+                    <div class="col-12 mt-2 mb-2">
+                        <button type="button" class="btn btn-secondary float-right" ng-click="CancelSave()">Close</button>
+                        <button type="button" ng-if="!WorkPermitModel.IsSubmitted" class="btn btn-local float-right mr-1" ng-click="SaveWorkPermit()">Save</button>
+                        <button type="button" ng-if="!WorkPermitModel.IsSubmitted" class="btn btn-local float-right mr-1" ng-click="SaveWorkPermit(true)">Save And Submit</button>
+                        <button type="button" ng-if="WorkPermitModel.IsSubmitted && (isFinalpprovalEnabled || isIMSApprovalEnabled || isHRApprovalEnabled)" class="btn btn-local float-right mr-1" ng-click="ApproveRejectWorkPermit()">Approve / Reject</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $('#sandbox-container .input-append.date').datepicker({
+            format: "dd-M-yyyy",
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            calendarWeeks: true,
+
+        });
+        function setLicenseDetails() {
+            angular.element(document.getElementById('WorkPermitNewCtrl')).scope().setLicenseDetails();
+        }
+
+    </script>
+
+</div>
+
