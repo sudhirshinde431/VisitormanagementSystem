@@ -1,6 +1,7 @@
 using System.Web.Mvc;
 using Unity;
 using Unity.Mvc5;
+using VisitorsManagement.Models.RemoteEmployee;
 using VisitorsManagement.Repository;
 
 namespace VisitorsManagement
@@ -22,6 +23,7 @@ namespace VisitorsManagement
             container.RegisterType<IWPRepository, WPRepository>();
             container.RegisterType<IContractorRepository, ContractorRepository>();
             container.RegisterType<IVMReportRepository, VMReportRepository>();
+            container.RegisterType<IRemoteEmployee, RemoteEmployeeRepository>();
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
     }

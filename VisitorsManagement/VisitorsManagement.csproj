@@ -272,6 +272,7 @@
     <Compile Include="Controllers\ContractorController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\RemoteEmployeeController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SessionHeartbeatController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
@@ -291,6 +292,8 @@
     <Compile Include="Models\Contractor\ContractorMaster.cs" />
     <Compile Include="Models\Contractor\EmployeeFilter.cs" />
     <Compile Include="Models\DropDownModel.cs" />
+    <Compile Include="Models\RemoteEmployee\RemoteEmployee.cs" />
+    <Compile Include="Models\RemoteEmployee\RemoteEmployeeFilter.cs" />
     <Compile Include="Models\Report\VMReport.cs" />
     <Compile Include="Models\Report\VMReportFilter.cs" />
     <Compile Include="Models\ResponseClass.cs" />
@@ -322,10 +325,12 @@
     <Compile Include="Repository\IAuthRepository.cs" />
     <Compile Include="Repository\IContractorRepository.cs" />
     <Compile Include="Repository\IGenericRepository.cs" />
+    <Compile Include="Repository\IRemoteEmployee.cs" />
     <Compile Include="Repository\IUserRepository.cs" />
     <Compile Include="Repository\IVisitorsManagementRepository.cs" />
     <Compile Include="Repository\IVMReportRepository.cs" />
     <Compile Include="Repository\IWPRepository.cs" />
+    <Compile Include="Repository\RemoteEmployeeRepository.cs" />
     <Compile Include="Repository\test.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Repository\VisitorsManagementRepository.cs" />
@@ -459,6 +464,7 @@
     <Content Include="Views\Contractor\Index.cshtml" />
     <Content Include="Template\Contractor Employee Data.xlsx" />
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\RemoteEmployee\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

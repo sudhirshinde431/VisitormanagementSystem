@@ -341,7 +341,33 @@
              }
          });
          return response;
-     }
+    }
+
+    //----------------Remote Employee-----------------
+    this.getAllRemoteEmployee = function (filter) {
+
+        var response = $http({
+            method: "post",
+            data: { filter: filter },
+            url: baseURL + "RemoteEmployee/getRemoteEmployee",
+            dataType: "json"
+        });
+        return response;
+    }
+
+    this.SaveRemoteEmployee = function (RemoteEmployeeModel) {
+        var response = $http({
+            method: 'post',
+            url: baseURL + "RemoteEmployee/SaveRemoteEmployee",
+            data: { RemoteEmployeeModel: RemoteEmployeeModel },
+            dataType: "json"
+        });
+
+        return response;
+    }
+
+    //----------End Remote employee-------------
+
 });
 
 

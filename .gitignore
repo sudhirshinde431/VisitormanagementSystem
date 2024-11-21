@@ -7,3 +7,6 @@
 VisitorsManagement/bin/VisitorsManagement.dll
 VisitorsManagement/bin/VisitorsManagement.pdb
 .vs/VisitorsManagement/FileContentIndex/34ae6499-9264-4db9-8b1f-dfbe84816c93.vsidx
+/.vs
+/bin
+

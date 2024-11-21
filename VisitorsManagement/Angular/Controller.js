@@ -1,7 +1,7 @@
 ﻿
 app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout, Upload, NgTableParams, $window, constants, toaster) {
 
-   
+
     $scope.showTable = true;
     $scope.AppointmentModel = {};
     $scope.StatusMedia = constants.VMStatus;
@@ -16,7 +16,7 @@ app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout,
     // you can use lodash instead. e.g: _.min(arr, 'id') 
     $scope.min = function (arr) {
         return $filter('min')
-          ($filter('map')(arr, 'id'));
+            ($filter('map')(arr, 'id'));
     }
 
 
@@ -508,10 +508,10 @@ app.controller("WorkPermitCtrl", function ($scope, $http, myService, $timeout, U
     $scope.EmployeeModel = [];
     $scope.employeeCount = 0;
     $scope.SafetyTraining = [
-    { id: 1, type: "Use of PPE" },
-    { id: 2, type: "Log Out / Tag Out" },
-    { id: 3, type: "Lifting Tool & Tackles" },
-    { id: 4, type: "Unsafe Conditions" }
+        { id: 1, type: "Use of PPE" },
+        { id: 2, type: "Log Out / Tag Out" },
+        { id: 3, type: "Lifting Tool & Tackles" },
+        { id: 4, type: "Unsafe Conditions" }
     ];
 
     $scope.WPStatus = constants.WPStatus;
@@ -1000,7 +1000,7 @@ app.controller("WorkPermitCtrl", function ($scope, $http, myService, $timeout, U
                     }
                     else
                         toaster.success("Work Permit", "Work Permit Rejected Successfully.");
-                      $scope.EditWorkPermit($scope.WorkPermitModel.WPID);
+                    $scope.EditWorkPermit($scope.WorkPermitModel.WPID);
                 }
 
             }, function () {
@@ -1097,7 +1097,7 @@ app.controller("WorkPermitCtrl", function ($scope, $http, myService, $timeout, U
                     }
                     else
                         toaster.success("Work Permit", "Work Permit Rejected Successfully.");
-                        $scope.EditWorkPermit($scope.WorkPermitModel.WPID);
+                    $scope.EditWorkPermit($scope.WorkPermitModel.WPID);
                 }
 
             }, function () {
@@ -1137,7 +1137,7 @@ app.controller("WorkPermitCtrl", function ($scope, $http, myService, $timeout, U
                     }
                     else
                         toaster.success("Work Permit", "Work Permit Rejected Successfully.");
-                        $scope.EditWorkPermit($scope.WorkPermitModel.WPID);
+                    $scope.EditWorkPermit($scope.WorkPermitModel.WPID);
                 }
 
             }, function () {
@@ -1160,7 +1160,7 @@ app.controller("WorkPermitCtrl", function ($scope, $http, myService, $timeout, U
     $scope.IsAccessableSendReminder = function (CreatedBy, Status) {
         debugger;
         var UserID = localStorage.getItem("UserID");
-        if (CreatedBy == UserID && Status != "Approved" && Status != "Closed" && Status.indexOf("Rejected") ==-1)
+        if (CreatedBy == UserID && Status != "Approved" && Status != "Closed" && Status.indexOf("Rejected") == -1)
             return true;
         else
             return false;
@@ -2284,4 +2284,204 @@ app.controller("CtrlReports", function ($scope, $http, myService, $timeout, Uplo
             console.log('Error Occured');
         })
     }
+});
+
+app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeout, Upload, NgTableParams, $window, constants, toaster) {
+    $scope.showTable = true;
+    $scope.RemoteEmployeeModel = {};
+    $scope.HcodeAutoCompleteData = [];
+    $scope.DisableCOntrolOnEdit = false;
+    
+    $scope.getAllRemoteEmployee = function () {
+
+        var filter = { 'Hcode': '', FilterText: '' };
+        var response = myService.getAllRemoteEmployee(filter);
+
+        response.then(function (res) {
+            //-----Bind Data Table----------
+            $scope.data = res.data;
+            $scope.searchFilter = '';
+            $scope.TotalRecords = $scope.data.length;
+            $scope.showTable = true;
+
+            $scope.tableParams = new NgTableParams({
+                page: 1,
+                count: 25,
+                total: $scope.data.length,
+                getData: function ($defer, params) {
+                    $defer.resolve($scope.data.slice((params.page() - 1) * params.count(), params.page() * params.count())
+                    );
+                }
+            }, {
+                dataset: res.data
+            });
+
+            $timeout(function () {
+                freezeTable.update();
+            }, 1500);
+
+            //-------Bind Data Table---------------
+        }, function () {
+            console.log('Error Occured');
+        })
+    }
+    $scope.clearForm = function () {
+        $scope.RemoteEmployeeModel = {};
+        $scope.RemoteEmployeeModel.Pkey = "";
+        $scope.RemoteEmployeeModel.Hcode = "";
+        $scope.RemoteEmployeeModel.Name = "";
+        $scope.RemoteEmployeeModel.EmailID = "";
+        $scope.RemoteEmployeeModel.CheckOutDateTime = "";
+        $scope.RemoteEmployeeModel.CheckinDateTime = "";
+        $scope.RemoteEmployeeModel.IsVehicalParkedOnPremises = "";
+        $scope.RemoteEmployeeModel.VehicalNumber = "";
+        $scope.RemoteEmployeeModel.Comments = "";
+        $("#Hcode_value").val("");
+        $("#Hcode_value").prop("disabled", false);
+        $("#Pkey").val("");
+        $("#IsVehicalParkedOnPremises").prop("checked", false);
+    }
+    $scope.AddNewRecord = function () {
+        $scope.DisableCOntrolOnEdit = false;
+        $scope.clearForm();
+        $('#exampleModal').modal('show');
+    }
+    $scope.EditRemoteEmployee = function (Pkey) {
+        $scope.DisableCOntrolOnEdit = true;
+      
+        $scope.clearForm();
+        try {
+
+
+            if (Pkey != "") {
+                var filter = { 'Pkey': Pkey, FilterText: '' };
+                var response = myService.getAllRemoteEmployee(filter);
+                response.then(function (response) {
+
+
+                    $scope.RemoteEmployeeModel = {};
+                    $scope.RemoteEmployeeModel = response.data[0];
+                    $scope.RemoteEmployeeModel.Pkey = response.data[0].Pkey;
+                    $("#Hcode_value").val(response.data[0].Hcode);        
+                    $("#Pkey").val(response.data[0].Pkey); 
+                    $scope.RemoteEmployeeModel.Hcode = response.data[0].Hcode;
+                    $scope.RemoteEmployeeModel.Name = response.data[0].Name;
+                    $scope.RemoteEmployeeModel.EmailID = response.data[0].EmailID;
+                    $scope.RemoteEmployeeModel.CheckinDateTime = response.data[0].CheckinDateTime;
+                    $scope.RemoteEmployeeModel.CheckOutDateTime = response.data[0].CheckOutDateTime;
+                    $scope.RemoteEmployeeModel.IsVehicalParkedOnPremises = response.data[0].IsVehicalParkedOnPremises;
+                    if (response.data[0].IsVehicalParkedOnPremises == "True" || response.data[0].IsVehicalParkedOnPremises == "true") {
+                        $("#IsVehicalParkedOnPremises").prop("checked", true);
+                    }
+                    else {
+                        $("#IsVehicalParkedOnPremises").prop("checked", false);
+                    }
+                    $scope.RemoteEmployeeModel.VehicalNumber = response.data[0].VehicalNumber;
+                    $scope.RemoteEmployeeModel.Comments = response.data[0].Comments;   
+                    $("#Hcode_value").prop("disabled", true);
+                }, function () {
+                    console.log("Error Occurs");
+                });
+
+
+            }
+            else {
+                // $scope.AppointmentModel.VisitorName = selected.originalObject;
+            }
+        }
+        catch (err) {
+
+        }
+        $('#exampleModal').modal('show');
+    }
+
+
+
+    $scope.SaveRemoteEmployee = function () {
+
+        $scope.RemoteEmployeeModel.Pkey = $('#Pkey').val();
+        $scope.RemoteEmployeeModel.Hcode = $('#Hcode_value').val();
+        $scope.RemoteEmployeeModel.Name = $("#Name").val();
+        $scope.RemoteEmployeeModel.EmailID = $("#EmailID").val();
+        $scope.RemoteEmployeeModel.CheckOutDateTime = $("#CheckOutDateTime").val();
+        $scope.RemoteEmployeeModel.CheckinDateTime = $("#CheckinDateTime").val();
+        $scope.RemoteEmployeeModel.IsVehicalParkedOnPremises = $("#IsVehicalParkedOnPremises").is(':checked');
+        $scope.RemoteEmployeeModel.VehicalNumber = $("#VehicalNumber").val();
+        $scope.RemoteEmployeeModel.Comments = $("#Comments").val();
+
+        var response = myService.SaveRemoteEmployee($scope.RemoteEmployeeModel); // get call from service.js
+        response.then(function (d) {
+
+            if (d.data.isSuccessful) {
+                $scope.RemoteEmployeeModel = null;
+                $scope.showTable = true;
+                $('#exampleModal').modal('hide');
+                $scope.getAllRemoteEmployee();
+                $scope.HcodeAutoCompleteDataCall("ForAutocomplete");
+                toaster.success("Visitor's Management", "Remote Employee Request Added Successfully.");
+            }
+            else {
+                toaster.error("Visitor's Management", d.data.message);
+            }
+
+        }).catch(function (error) {
+            console.log(error);
+            toaster.error("Visitor's Management", "Error Occured.");
+        })
+
+    }
+    $scope.HcodeAutoCompleteDataCall = function (ForAutocomplete) {
+
+        var filter = { FilterText: $scope.searchFilter, "ForAutocomplete": ForAutocomplete };
+        var response = myService.getAllRemoteEmployee(filter);
+
+        response.then(function (res) {
+            $scope.HcodeAutoCompleteData = res.data;
+
+            //-------Bind Data Table---------------
+        }, function () {
+            console.log('Error Occured');
+        })
+    }
+
+    $scope.SelectedRemoteEmployeeForAutocomplete = function (selected) {
+        try {
+
+
+            if (selected != undefined) {
+                if (selected.originalObject != "") {
+                    var filter = { 'Hcode': selected.originalObject.Hcode, FilterText: '' };
+                    var response = myService.getAllRemoteEmployee(filter);
+                    response.then(function (response) {
+
+
+                        $scope.RemoteEmployeeModel = {};
+                        $scope.RemoteEmployeeModel = response.data[0];
+                        $scope.RemoteEmployeeModel.Pkey = response.data[0].Pkey;
+                        $scope.RemoteEmployeeModel.Hcode = response.data[0].Hcode;
+                        $scope.RemoteEmployeeModel.Name = response.data[0].Name;
+                        $scope.RemoteEmployeeModel.EmailID = response.data[0].EmailID;
+                        $scope.RemoteEmployeeModel.CheckinDateTime = null;
+                        $scope.RemoteEmployeeModel.CheckOutDateTime = null;
+                    }, function () {
+                        console.log("Error Occurs");
+                    });
+
+                }
+                else {
+                    //  $scope.AppointmentModel.VisitorName = selected.originalObject;
+                }
+            }
+            else {
+                // $scope.AppointmentModel.VisitorName = selected.originalObject;
+            }
+        }
+        catch (err) {
+
+        }
+
+    }
+
+    $scope.getAllRemoteEmployee();
+    $scope.HcodeAutoCompleteDataCall("ForAutocomplete");
 });
