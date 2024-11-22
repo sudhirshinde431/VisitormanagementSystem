@@ -48,7 +48,7 @@ namespace VisitorsManagement.Repository
             {
                 //var Test = DB.Decrypt("HZNFvxbLPVcXCDUaV46DCLMscjYEOo4SSb/0i3iUW8g=");
                 var sQuery = $@"SELECT UserId,FirstName,LastName,FirstName + ' ' +LastName as 'FullName',EmailID,Role as 'RoleName' FROM tbl_Users WHERE 
-                            EmailId='{ loginUser.email }' AND Disable<>1 AND Password='{DB.encrypt(loginUser.password)}' COLLATE SQL_Latin1_General_CP1_CS_AS";
+                            EmailId='{loginUser.email}' AND Disable<>1 AND Password='{DB.encrypt(loginUser.password)}' COLLATE SQL_Latin1_General_CP1_CS_AS";
 
                 var parameters = new DynamicParameters();
                 //parameters.Add("@EmailId", loginUser.email);
@@ -71,6 +71,15 @@ namespace VisitorsManagement.Repository
 
                     var resultClaims = await _genericRepository.GetAsync<string>(sQuery, parameters);
                     currentUserDto.Claims = resultClaims;
+
+                    var ExpiredVM = $@"UPDATE tbl_VM_Appointment
+	                                SET STATUS = 'Expired',
+	                                UpdatedDate=GETDATE()
+	                                WHERE DATE < GetDate()
+		                            AND STATUS = 'Open'
+		                            OR  STATUS='Checked In'";
+                    await _genericRepository.GetAsync<string>(ExpiredVM, null);
+
                     return currentUserDto;
                 }
                 else
@@ -91,7 +100,7 @@ namespace VisitorsManagement.Repository
             {
                 //var Test = DB.Decrypt("HZNFvxbLPVcXCDUaV46DCLMscjYEOo4SSb/0i3iUW8g=");
                 var sQuery = $@"SELECT UserId,FirstName,LastName,FirstName + ' ' +LastName as 'FullName',EmailID,Role as 'RoleName' FROM tbl_Users WHERE 
-                            EmailId='{ loginUser.email }' AND Disable=1 AND Password='{DB.encrypt(loginUser.password)}' COLLATE SQL_Latin1_General_CP1_CS_AS";
+                            EmailId='{loginUser.email}' AND Disable=1 AND Password='{DB.encrypt(loginUser.password)}' COLLATE SQL_Latin1_General_CP1_CS_AS";
 
                 var parameters = new DynamicParameters();
                 //parameters.Add("@EmailId", loginUser.email);

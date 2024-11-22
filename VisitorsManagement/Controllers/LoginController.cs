@@ -55,11 +55,7 @@ namespace VisitorsManagement.Controllers
             //{
             // _wpRepository.Wpreminder();
              var Test= DB.Decrypt("bGQ5xCX4ni2XTXU5TybRIYrBX2V8j7ympH5tdHDW8+k=");
-            DateTime dt2 = new DateTime(2022, 09, 01);
-            if (DateTime.Now > dt2 && WebConfigurationManager.AppSettings["DisableDateCheck"]!="true")
-            {
-                return "Block";
-            }
+           
             CurrentUserDto currentUserDtoDisable = await _authRepository.LoginUserActive(user);
             if(currentUserDtoDisable!=null)
             {
