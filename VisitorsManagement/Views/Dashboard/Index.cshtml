@@ -83,14 +83,26 @@
                         </div>
                     </div>
                 </a>
-                <a  href="@Url.Action("Index", "RemoteEmployee")">
-                    <div class="dashboardDivBoxtest">
+                <a ng-if="IsAccessable('ReadRE')" href="@Url.Action("Index", "RemoteEmployee")">
+                    <div ng-if="IsAccessable('ReadRE')" class="dashboardDivBoxtest">
                         <div class="innerdb">
                             <div class="text-center">
                                 <i style="font-size:67px;" class='bx bx-id-card  nav_icon'></i><br />
                             </div>
                             <div class="txtsec">
                                 <h5>Remote <br /> Employee</h5>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a ng-if="IsAccessable('ReadSC')" href="@Url.Action("Index", "RemoteEmployee")">
+                    <div ng-if="IsAccessable('ReadSC')" class="dashboardDivBoxtest">
+                        <div class="innerdb">
+                            <div class="text-center">
+                                <i style="font-size:67px;" class='bx bx-id-card  nav_icon'></i><br />
+                            </div>
+                            <div class="txtsec">
+                                <h5>Security Check</h5>
                             </div>
                         </div>
                     </div>

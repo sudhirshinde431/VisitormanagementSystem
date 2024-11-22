@@ -294,6 +294,7 @@
     <Compile Include="Models\DropDownModel.cs" />
     <Compile Include="Models\RemoteEmployee\RemoteEmployee.cs" />
     <Compile Include="Models\RemoteEmployee\RemoteEmployeeFilter.cs" />
+    <Compile Include="Models\RemoteEmployee\RemoteEmployeeSecurityCheck.cs" />
     <Compile Include="Models\Report\VMReport.cs" />
     <Compile Include="Models\Report\VMReportFilter.cs" />
     <Compile Include="Models\ResponseClass.cs" />

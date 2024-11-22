@@ -366,6 +366,18 @@
         return response;
     }
 
+
+    this.SaveSecurityCheck = function (RemoteEmployeeSecurityCheck) {
+        var response = $http({
+            method: 'post',
+            url: baseURL + "RemoteEmployee/SaveSecurityCheck",
+            data: { RemoteEmployeeSecurityCheck: RemoteEmployeeSecurityCheck },
+            dataType: "json"
+        });
+
+        return response;
+    }
+
     //----------End Remote employee-------------
 
 });

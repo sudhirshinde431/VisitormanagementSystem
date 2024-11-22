@@ -1275,6 +1275,7 @@ app.controller("DashboardCtrl", function ($scope, $http, myService, $timeout, Up
 
     $scope.IsAccessable = function (claim) {
         var strClaims = localStorage.getItem('Claims');
+        console.log(strClaims);
         var claims = strClaims.split(',');
 
         if (claims.includes(claim))
@@ -2291,13 +2292,17 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
     $scope.RemoteEmployeeModel = {};
     $scope.HcodeAutoCompleteData = [];
     $scope.DisableCOntrolOnEdit = false;
-    
+    $scope.RemoteEmployeeSecurityCheck = {};
+    $scope.AccessCardIssueList = [{ text: 'Yes', value: 'Yes' }, { text: 'No', value: 'No' }];
+    $scope.AccessCardCollectedList = [{ text: 'Yes', value: 'Yes' }, { text: 'No', value: 'No' }];
+
     $scope.getAllRemoteEmployee = function () {
 
         var filter = { 'Hcode': '', FilterText: '' };
         var response = myService.getAllRemoteEmployee(filter);
 
         response.then(function (res) {
+            console.log(res);
             //-----Bind Data Table----------
             $scope.data = res.data;
             $scope.searchFilter = '';
@@ -2325,6 +2330,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
             console.log('Error Occured');
         })
     }
+
     $scope.clearForm = function () {
         $scope.RemoteEmployeeModel = {};
         $scope.RemoteEmployeeModel.Pkey = "";
@@ -2341,14 +2347,31 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#Pkey").val("");
         $("#IsVehicalParkedOnPremises").prop("checked", false);
     }
+    $scope.clearFormSecurityCheck = function () {
+        $scope.RemoteEmployeeSecurityCheck = {};
+        $scope.RemoteEmployeeSecurityCheck.Pkey = "";
+        $scope.RemoteEmployeeSecurityCheck.Hcode = "";
+        $scope.RemoteEmployeeSecurityCheck.Name = "";
+        $scope.RemoteEmployeeSecurityCheck.EmailID = "";
+        $scope.RemoteEmployeeSecurityCheck.CheckOutDateTime = "";
+        $scope.RemoteEmployeeSecurityCheck.CheckinDateTime = "";
+        $scope.RemoteEmployeeSecurityCheck.IsVehicalParkedOnPremises = "";
+        $scope.RemoteEmployeeSecurityCheck.VehicalNumber = "";
+        $scope.RemoteEmployeeSecurityCheck.Comments = "";
+        $("#Hcode_value").val("");
+        $("#Hcode_value").prop("disabled", false);
+        $("#Pkey").val("");
+        $("#IsVehicalParkedOnPremises").prop("checked", false);
+    }
     $scope.AddNewRecord = function () {
         $scope.DisableCOntrolOnEdit = false;
         $scope.clearForm();
+        $scope.RemoteEmployeeSecurityCheck = {};
         $('#exampleModal').modal('show');
     }
     $scope.EditRemoteEmployee = function (Pkey) {
         $scope.DisableCOntrolOnEdit = true;
-      
+        $scope.RemoteEmployeeSecurityCheck = {};
         $scope.clearForm();
         try {
 
@@ -2362,8 +2385,8 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeModel = {};
                     $scope.RemoteEmployeeModel = response.data[0];
                     $scope.RemoteEmployeeModel.Pkey = response.data[0].Pkey;
-                    $("#Hcode_value").val(response.data[0].Hcode);        
-                    $("#Pkey").val(response.data[0].Pkey); 
+                    $("#Hcode_value").val(response.data[0].Hcode);
+                    $("#Pkey").val(response.data[0].Pkey);
                     $scope.RemoteEmployeeModel.Hcode = response.data[0].Hcode;
                     $scope.RemoteEmployeeModel.Name = response.data[0].Name;
                     $scope.RemoteEmployeeModel.EmailID = response.data[0].EmailID;
@@ -2372,12 +2395,14 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeModel.IsVehicalParkedOnPremises = response.data[0].IsVehicalParkedOnPremises;
                     if (response.data[0].IsVehicalParkedOnPremises == "True" || response.data[0].IsVehicalParkedOnPremises == "true") {
                         $("#IsVehicalParkedOnPremises").prop("checked", true);
+                        $("#DvVichalNumber").css("display", "");
                     }
                     else {
                         $("#IsVehicalParkedOnPremises").prop("checked", false);
+                        $("#DvVichalNumber").css("display", "none");
                     }
                     $scope.RemoteEmployeeModel.VehicalNumber = response.data[0].VehicalNumber;
-                    $scope.RemoteEmployeeModel.Comments = response.data[0].Comments;   
+                    $scope.RemoteEmployeeModel.Comments = response.data[0].Comments;
                     $("#Hcode_value").prop("disabled", true);
                 }, function () {
                     console.log("Error Occurs");
@@ -2457,12 +2482,16 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
 
                         $scope.RemoteEmployeeModel = {};
                         $scope.RemoteEmployeeModel = response.data[0];
-                        $scope.RemoteEmployeeModel.Pkey = response.data[0].Pkey;
+                        $scope.RemoteEmployeeModel.Pkey = null;
                         $scope.RemoteEmployeeModel.Hcode = response.data[0].Hcode;
                         $scope.RemoteEmployeeModel.Name = response.data[0].Name;
                         $scope.RemoteEmployeeModel.EmailID = response.data[0].EmailID;
                         $scope.RemoteEmployeeModel.CheckinDateTime = null;
                         $scope.RemoteEmployeeModel.CheckOutDateTime = null;
+                        $scope.RemoteEmployeeModel.VehicalNumber = null;
+                        $scope.RemoteEmployeeModel.Comments = null;
+                        $scope.RemoteEmployeeModel.IsVehicalParkedOnPremises = false;
+
                     }, function () {
                         console.log("Error Occurs");
                     });
@@ -2479,6 +2508,138 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         catch (err) {
 
         }
+
+    }
+    $scope.IsAccessable = function (claim) {
+
+        var strClaims = localStorage.getItem('Claims');
+        var claims = strClaims.split(',');
+
+        if (claims.includes(claim))
+            return true;
+        else
+            return false;
+    }
+    $scope.ViewSecurityCheck = function (Pkey) {
+        $scope.RemoteEmployeeSecurityCheck = {};
+        $scope.DisableSecuirtyCheck = true;
+        $scope.DisableSecuirtyCheckMainCOntrols = true;
+        $("#Hcode_value").prop("disabled", true);
+
+        $scope.clearFormSecurityCheck();
+        try {
+
+
+            if (Pkey != "") {
+                var filter = { 'Pkey': Pkey, FilterText: '' };
+                var response = myService.getAllRemoteEmployee(filter);
+                response.then(function (response) {
+
+                    var GuestAccessCardIssuevalue = response.data[0].GuestAccessCardIssue;
+                    var AccessCardCollectionStatusValue = response.data[0].AccessCardCollectionStatus;
+                    $scope.RemoteEmployeeSecurityCheck = {};
+                    $scope.RemoteEmployeeSecurityCheck = response.data[0];
+                    $scope.RemoteEmployeeSecurityCheck.Pkey = response.data[0].Pkey;
+                    $("#HcodeSecurityCheckModel_value").val(response.data[0].Hcode);
+                    $("#HcodeSecurityCheckModel_Pkey").val(response.data[0].Pkey);
+                    $scope.RemoteEmployeeSecurityCheck.Hcode = response.data[0].Hcode;
+                    $scope.RemoteEmployeeSecurityCheck.Name = response.data[0].Name;
+                    $scope.RemoteEmployeeSecurityCheck.EmailID = response.data[0].EmailID;
+                    $scope.RemoteEmployeeSecurityCheck.CheckinDateTime = response.data[0].CheckinDateTime;
+                    $scope.RemoteEmployeeSecurityCheck.CheckOutDateTime = response.data[0].CheckOutDateTime;
+                    $scope.RemoteEmployeeSecurityCheck.IsVehicalParkedOnPremises = response.data[0].IsVehicalParkedOnPremises;
+                    //$scope.RemoteEmployeeSecurityCheck.GuestAccessCardIssue = response.data[0].GuestAccessCardIssue;
+
+                    if (response.data[0].GuestAccessCardIssue == "Yes") {
+                        $("#dvAccessCardCollected").css("display", "");
+                        $("#DvDefaultAccessCardNumber").css("display", "");
+                        $scope.DisableSecuirtyCheckMainCOntrols = true;
+
+                    }
+                    else {
+                        $scope.DisableSecuirtyCheckMainCOntrols = false;
+                        $("#dvAccessCardCollected").css("display", "none");
+                        $("#DvDefaultAccessCardNumber").css("display", "none");
+                    }
+                    //$scope.RemoteEmployeeSecurityCheck.AccessCardCollectionStatus = response.data[0].AccessCardCollectionStatus;
+
+                    if (response.data[0].AccessCardCollectionStatus == "No") {
+                        $("#DvEscalation").css("display", "");
+                    }
+                    else {
+                        $("#DvEscalation").css("display", "none");
+
+                    }
+
+                    $scope.RemoteEmployeeSecurityCheck.Escalation = response.data[0].Escalation;
+                    $scope.RemoteEmployeeSecurityCheck.DeafultGuestCardNumber = response.data[0].DeafultGuestCardNumber;
+                    if (response.data[0].IsVehicalParkedOnPremises == "True" || response.data[0].IsVehicalParkedOnPremises == "true") {
+                        $("#IsVehicalParkedOnPremisesSc").prop("checked", true);
+                        $("#DvVichalNumbersc").css("display", "");
+                    }
+                    else {
+                        $("#IsVehicalParkedOnPremisesSc").prop("checked", false);
+                        $("#DvVichalNumbersc").css("display", "none");
+                    }
+                    $scope.RemoteEmployeeSecurityCheck.VehicalNumber = response.data[0].VehicalNumber;
+                    $scope.RemoteEmployeeSecurityCheck.Comments = response.data[0].Comments;
+                    $("#HcodeSecurityCheckModel_value").prop("disabled", true);
+
+                    $("#ddlGuestAccessCardIssue").val(GuestAccessCardIssuevalue).trigger('change');
+                    $("#ddlAccessCardCollected").val(AccessCardCollectionStatusValue).trigger('change');
+
+
+                }, function () {
+                    console.log("Error Occurs");
+                });
+
+
+            }
+            else {
+                // $scope.AppointmentModel.VisitorName = selected.originalObject;
+            }
+        }
+        catch (err) {
+
+        }
+
+
+        $('#SecurityCheckModel').modal('show');
+    }
+
+
+    $scope.SaveSecurityCheck = function () {
+
+        $scope.RemoteEmployeeSecurityCheck.Pkey = $('#HcodeSecurityCheckModel_Pkey').val();
+        $scope.RemoteEmployeeSecurityCheck.GuestAccessCardIssue = $('#ddlGuestAccessCardIssue').val();
+        if ($('#ddlGuestAccessCardIssue').val() == "Yes") {
+            $scope.RemoteEmployeeSecurityCheck.AccessCardCollectionStatus = $("#ddlAccessCardCollected").val();
+            $scope.RemoteEmployeeSecurityCheck.DeafultGuestCardNumber = $("#DeafultGuestCardNumber").val();
+        }
+        if ($("#ddlAccessCardCollected").val() == "No") {
+            $scope.RemoteEmployeeSecurityCheck.Escalation = $("#Escalation").val();
+        }
+       
+
+        var response = myService.SaveSecurityCheck($scope.RemoteEmployeeSecurityCheck); // get call from service.js
+        response.then(function (d) {
+
+            if (d.data.isSuccessful) {
+                $scope.RemoteEmployeeSecurityCheck = [];
+                $scope.showTable = true;
+                $('#SecurityCheckModel').modal('hide');
+                $scope.getAllRemoteEmployee();
+                $scope.HcodeAutoCompleteDataCall("ForAutocomplete");
+                toaster.success("Visitor's Management", "Security Check Request Added Successfully.");
+            }
+            else {
+                toaster.error("Visitor's Management", d.data.message);
+            }
+
+        }).catch(function (error) {
+            console.log(error);
+            toaster.error("Visitor's Management", "Error Occured.");
+        })
 
     }
 
