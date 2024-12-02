@@ -296,7 +296,7 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups | filter:searchFilter "> {{$groups}}
+                            <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups | filter:VM_getAllAppointment "> {{$groups}}
                                 <td colspan="8">
                                     <a href="" ng-click="switchGroup(group, $parent.$groups)">
                                         <span class="glyphicon" ng-class="{ 'fas fa-chevron-right': group.$hideRows, 'fas fa-chevron-down': !group.$hideRows }"></span>

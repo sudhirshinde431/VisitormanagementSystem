@@ -280,6 +280,7 @@ namespace VisitorsManagement.Repository
             result.Add(new Claims() { PageName = "Work Permit", CanCreate = false, CanRead = false, CanUpdate = false, PageNameShort = "WP" });
             //result.Add(new Claims() { PageName = "User Management", CanCreate = false, CanRead = false, CanUpdate = false, PageNameShort = "UM" });
             // result.Add(new Claims() { PageName = "Dashboard", CanCreate = false, CanRead = false, CanUpdate = false, PageNameShort = "DB" });
+            result.Add(new Claims() { PageName = "Remote Employee", CanCreate = false, CanRead = false, CanUpdate = false, PageNameShort = "RE" });
 
             return result;
         }

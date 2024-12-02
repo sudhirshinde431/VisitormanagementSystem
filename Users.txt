@@ -5,3 +5,9 @@ password
 Security 
 ganeshkasar.kasar@husqvarnagroup.com
 nzjwxpqe
+
+Appointment Number
+Vister Bame
+Visit to
+Date
+Company Name
