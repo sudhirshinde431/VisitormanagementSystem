@@ -376,6 +376,7 @@
     <Content Include="Angular\ui-bootstrap-tpls-2.5.0.js" />
     <Content Include="Angular\xlsx.full.min.js" />
     <Content Include="Content\angucomplete-alt.css" />
+    <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-select.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\boxicons.min.css" />
@@ -410,6 +411,7 @@
     <Content Include="Scripts\angucomplete-alt.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
