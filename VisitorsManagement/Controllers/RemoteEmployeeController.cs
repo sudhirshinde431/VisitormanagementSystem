@@ -101,8 +101,13 @@ namespace VisitorsManagement.Controllers
             ResponseClass clsResponse = new ResponseClass();
             try
             {
+                if (RemoteEmployeeSecurityCheck.AccessCardCollectionStatus == "No" && string.IsNullOrEmpty(RemoteEmployeeSecurityCheck.Escalation))
+                {
+                    ModelState.AddModelError("Escalation", "Escalation is required.");
+                }
                 if (ModelState.IsValid)
                 {
+                  
 
                     RemoteEmployeeSecurityCheck.CreatedBySC = Convert.ToInt32(Session["UserID"]);
                     RemoteEmployeeSecurityCheck.CreatedDateSC = DateTime.UtcNow.Date.ToString("dd-MMM-yyyy");

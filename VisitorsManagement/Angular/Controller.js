@@ -2348,6 +2348,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#Pkey").val("");
         $("#IsVehicalParkedOnPremises").prop("checked", false);
         $("#BookForWeekend").prop("checked", false);
+        $(".dvCheckinDateTime").find(".bx-calendar").css("display", "");
     }
     $scope.clearFormSecurityCheck = function () {
         $scope.RemoteEmployeeSecurityCheck = {};
@@ -2364,6 +2365,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#Hcode_value").prop("disabled", false);
         $("#Pkey").val("");
         $("#IsVehicalParkedOnPremises").prop("checked", false);
+        $(".dvCheckinDateTimeSc").find(".bx-calendar").css("display", "");
     }
     $scope.AddNewRecord = function () {
         $scope.DisableCOntrolOnEdit = false;
@@ -2453,7 +2455,11 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     }
                     if (response.data[0].Status == "Checked Out") {
                         $scope.DisableCOntrolOnEditAdmin = true;
+                       
+
+
                     }
+                    $(".dvCheckinDateTime").find(".bx-calendar").css("display", "none");
                     $scope.RemoteEmployeeModel.VehicalNumber = response.data[0].VehicalNumber;
                     $scope.RemoteEmployeeModel.Comments = response.data[0].Comments;
                     $("#Hcode_value").prop("disabled", true);
@@ -2594,6 +2600,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#Hcode_value").prop("disabled", true);
         $("#DvRENumber").css("display", "");
         $scope.clearFormSecurityCheck();
+        $(".dvCheckinDateTimeSc").find(".bx-calendar").css("display", "none");
         try {
 
 
@@ -2637,6 +2644,10 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.DisableSecuirtyCheckMainCOntrols = false;
                     if (response.data[0].Status == "Checked Out") {
                         $scope.DisableSecuirtyCheckMainCOntrols = true;
+                        $(".dvCheckOutDateTimeSc").find(".bx-calendar").css("display", "none");
+                    }
+                    else {
+                        $(".dvCheckOutDateTimeSc").find(".bx-calendar").css("display", "");
                     }
                     //$scope.RemoteEmployeeSecurityCheck.AccessCardCollectionStatus = response.data[0].AccessCardCollectionStatus;
 
