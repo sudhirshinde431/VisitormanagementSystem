@@ -173,11 +173,11 @@ END as SortOrder
             return result;
         }
 
-        public static int CalculateDaysBetweenDates(DateTime startDate, DateTime endDate)
+        public static Double CalculateDaysBetweenDates(DateTime startDate, DateTime endDate)
         {
             // Calculate the difference in days
             TimeSpan dateDifference = endDate - startDate;
-            return dateDifference.Days;
+            return dateDifference.TotalDays;
         }
 
         public async Task<int> SaveRemoteEmployee(RemoteEmployee remoteEmployee)
@@ -230,13 +230,13 @@ END as SortOrder
                 else
                 {
 
-                    int numberOfDays = CalculateDaysBetweenDates(Convert.ToDateTime(remoteEmployee.CheckinDateTime),
-                        Convert.ToDateTime(remoteEmployee.CheckOutDateTime));
+                    Double numberOfDays = CalculateDaysBetweenDates(Convert.ToDateTime(remoteEmployee.CheckinDateTime).Date,
+                        Convert.ToDateTime(remoteEmployee.CheckOutDateTime).Date);
                     if (numberOfDays == 0)
                     {
                         numberOfDays = 1;
                     }
-                    for (int i = 0; i < numberOfDays; i++)
+                    for (int i = 0; i < numberOfDays+1; i++)
                     {
                         DateTime CheckinDateTime = Convert.ToDateTime(remoteEmployee.CheckinDateTime);
                         TimeSpan CheckIntime = CheckinDateTime.TimeOfDay;

@@ -2347,6 +2347,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#Hcode_value").prop("disabled", false);
         $("#Pkey").val("");
         $("#IsVehicalParkedOnPremises").prop("checked", false);
+        $("#BookForWeekend").prop("checked", false);
     }
     $scope.clearFormSecurityCheck = function () {
         $scope.RemoteEmployeeSecurityCheck = {};
@@ -2436,6 +2437,11 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeModel.EmailID = response.data[0].EmailID;
                     $scope.RemoteEmployeeModel.CheckinDateTime = response.data[0].CheckinDateTime;
                     $scope.RemoteEmployeeModel.CheckOutDateTime = response.data[0].CheckOutDateTime;
+
+                   
+                    $("#CheckOutDateTime").val(response.data[0].CheckOutDateTime);
+                    $("#CheckinDateTime").val(response.data[0].CheckinDateTime);
+
                     $scope.RemoteEmployeeModel.IsVehicalParkedOnPremises = response.data[0].IsVehicalParkedOnPremises;
                     if (response.data[0].IsVehicalParkedOnPremises == "True" || response.data[0].IsVehicalParkedOnPremises == "true") {
                         $("#IsVehicalParkedOnPremises").prop("checked", true);
@@ -2481,6 +2487,8 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $scope.RemoteEmployeeModel.VehicalNumber = $("#VehicalNumber").val();
         $scope.RemoteEmployeeModel.Comments = $("#Comments").val();
         $scope.RemoteEmployeeModel.Status = $("#TxtStatus").val();
+        $scope.RemoteEmployeeModel.BookForWeekend = $("#BookForWeekend").is(':checked');
+        
         
       
 
@@ -2683,7 +2691,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $scope.RemoteEmployeeSecurityCheck.GuestAccessCardIssue = $('#ddlGuestAccessCardIssue').val();
         $scope.RemoteEmployeeSecurityCheck.CheckOutDateTime = $("#CheckOutDateTimeSc").val();
         $scope.RemoteEmployeeSecurityCheck.CheckinDateTime = $("#CheckinDateTimeSc").val();
-
+        
 
         if ($('#ddlGuestAccessCardIssue').val() == "Yes") {
             $scope.RemoteEmployeeSecurityCheck.AccessCardCollectionStatus = $("#ddlAccessCardCollected").val();

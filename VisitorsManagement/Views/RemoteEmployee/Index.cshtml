@@ -29,7 +29,7 @@
                 <input type="text" class="form-control" style="width:100%;" ng-model="searchFilter" placeholder="Search.." />
                 @*<button class="btn btn-primary form-control" style="background-color:#002454; border-radius:4px; width:40px; margin-bottom:4px !important;" type="button" ng-click="SearchWorkPermit()"><i class='bx bx-search-alt-2'></i></button>*@
             </div>
-            <div class="col-1 w-100" ng-show="showTable" ng-if="IsAccessable('CreateRE')">
+            <div class="col-1 w-100" ng-show="showTable" ng-if="IsAccessable('CreateRE') || IsAccessable('CreateSC')">
                 <input type="button" class="btn btn-local float-right" value="Add New" ng-click="AddNewRecord()" />
             </div>
         </div>
@@ -212,6 +212,7 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="row">
+                                  
                                         <div id="DvRENumber" class="col-4">
                                             <div class="form-group">
                                                 <label>RE Number</label>
@@ -250,7 +251,7 @@
                                             <div class="form-group">
                                                 <label>Check in date and time </label>
                                                 <div class="input-append date dvCheckinDateTime">
-                                                    <input type="text" ng-disabled="DisableCOntrolOnEdit" id="CheckinDateTime" placeholder="Enter Check In Date" class="datepicker form-control readonly Date" ><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
+                                                    <input type="text" ng-disabled="DisableCOntrolOnEdit" id="CheckinDateTime" placeholder="Enter Check In Date" class="datepicker form-control readonly Date" ><span  class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
                                                 </div>
 
                                             </div>
@@ -265,15 +266,20 @@
                                             </div>
                                         </div>
                                         <div class="col-4" id="DvBookForWeekend" style="display:none">
-                                            <div class="form-group">
-                                                <label>Book for Weekend's</label>
-                                                <input type="checkbox" ng-disabled="DisableCOntrolOnEditAdmin" value="true" id="BookForWeekend" ng-model="RemoteEmployeeModel.BookForWeekend" class="form-control" />
+                                            <div>
+                                                <label>Book for Weekend's</label>                                               
+                                                <input class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched" 
+                                                 ng-disabled="DisableCOntrolOnEditAdmin" id="BookForWeekend" type="checkbox" value="true" style="">
+
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label>Is Vehical Parked On Premises</label>
-                                                <input type="checkbox" ng-disabled="DisableCOntrolOnEditAdmin" value="true" id="IsVehicalParkedOnPremises" ng-model="RemoteEmployeeModel.IsVehicalParkedOnPremises" class="form-control" onclick="IsVehicalParkedOnPremisesClick()" />
+                                               
+                                                <input class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched"
+                                                       ng-disabled="DisableCOntrolOnEditAdmin" id="IsVehicalParkedOnPremises" type="checkbox" value="true" style=""  onclick="IsVehicalParkedOnPremisesClick()" >
+
                                             </div>
                                         </div>
                                         <div class="col-4" id="DvVichalNumber" style="display:none">
@@ -377,7 +383,9 @@
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label>Is Vehical Parked On Premises</label>
-                                                <input  type="checkbox" ng-disabled="DisableSecuirtyCheck" value="true" id="IsVehicalParkedOnPremisesSc" ng-model="RemoteEmployeeSecurityCheck.IsVehicalParkedOnPremises" class="form-control" onclick="IsVehicalParkedOnPremisesClick()" />
+                                                <input  type="checkbox" ng-disabled="DisableSecuirtyCheck" 
+                                                       class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched"
+                                                       value="true" id="IsVehicalParkedOnPremisesSc" onclick="IsVehicalParkedOnPremisesClick()" />
                                             </div>
                                         </div>
 
