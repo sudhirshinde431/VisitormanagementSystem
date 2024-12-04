@@ -185,7 +185,7 @@
                                     sortable="'Status'" ng-bind="details.Status" ng-attr-title="{{details.Status}}"></td>
 
                                 <td ng-if="IsAccessable('UpdateRE')" data-title="'View'" class="s5">
-                                    <a href="" class="btn btn-link" ng-click="EditRemoteEmployee(details.Pkey,'View')" title="View/Edit"> View/Edit </a>
+                                    <a href="" class="editButton" ng-click="EditRemoteEmployee(details.Pkey,'View')" title="View/Edit"> <i style="font-size: 17px;" class="bx bx-edit-alt"></i></a>
                                 </td>
                                 <td class="s15" ng-if="IsAccessable('UpdateSC')" data-title="'Security Check'">
                                     <a href="" class="btn btn-link" ng-click="ViewSecurityCheck(details.Pkey,'View')" title="View/Edit"> View </a>

@@ -85,7 +85,7 @@ END as SortOrder,
                              ";
 
 
-            sQuery = sQuery + $" ORDER BY SortOrder";
+            sQuery = sQuery + $" ORDER BY IsCheckInToday desc,SortOrder";
             if (!string.IsNullOrEmpty(filter.Hcode))
             {
                 sQuery = $@"SELECT
@@ -139,6 +139,10 @@ END as SortOrder,
             {
                 sQuery = sQuery + " Where Hcode is not null GROUP BY Hcode,EmailID,Name";
 
+            }
+            if(filter.FilterText== "ForAutotCompleteSelect" && string.IsNullOrEmpty(filter.Hcode))
+            {
+                return new List<RemoteEmployee>();
             }
             var result = await _genericRepository.GetAsync<RemoteEmployee>(sQuery, null);
 
@@ -241,6 +245,10 @@ END as SortOrder,
                     if (numberOfDays == 0 || Convert.ToDateTime(remoteEmployee.CheckinDateTime).Date == Convert.ToDateTime(remoteEmployee.CheckOutDateTime).Date)
                     {
                         numberOfDays = 1;
+                    }
+                    else
+                    {
+                        numberOfDays = numberOfDays + 1;
                     }
                   
                     for (int i = 0; i < numberOfDays; i++)

@@ -117,7 +117,7 @@ namespace VisitorsManagement.Repository
         {
             DateTime currentDate = DB.getCurrentIndianDate();
 
-            var sQuery = $@"SELECT  CONVERT(char(10), Date,126) as DateInGlobalFormate,VisitorPhoneNumber,AppointmentId,AppointmentNo,Replace(convert(char(11),Date,106),' ', '-') as 'strDate',VisitorName,U.FirstName + ' ' + U.LastName 'PersonToVisitName',InTime,OutTime,NumberOfPerson,ISNULL(Status,'') 'Status',
+            var sQuery = $@"SELECT  RepresentingCompany,CONVERT(char(10), Date,126) as DateInGlobalFormate,VisitorPhoneNumber,AppointmentId,AppointmentNo,Replace(convert(char(11),Date,106),' ', '-') as 'strDate',VisitorName,U.FirstName + ' ' + U.LastName 'PersonToVisitName',InTime,OutTime,NumberOfPerson,ISNULL(Status,'') 'Status',
                             'IsCheckInToday' = CASE WHEN DATEDIFF(DAY, CAST(Date AS DATE), CAST('{currentDate.ToString("dd-MMM-yyyy")}' AS DATE)) = 0 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END FROM tbl_VM_Appointment VM LEFT JOIN tbl_Users U 
                             ON VM.PersonToVisitID = U.UserID";
             if(filter.ForAutocomplete== "ForAutocomplete")

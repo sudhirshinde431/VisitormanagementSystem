@@ -2367,6 +2367,8 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#BookForWeekend").prop("checked", false);
         $(".dvCheckinDateTime").find(".bx-calendar").css("display", "");
         $scope.RequestFor = "Edit";
+        $scope.DisableCOntrolOnEditAdmin = false;
+        
     }
     $scope.clearFormSecurityCheck = function () {
         $scope.RemoteEmployeeSecurityCheck = {};
@@ -2481,6 +2483,8 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
 
                     }
                     $(".dvCheckinDateTime").find(".bx-calendar").css("display", "none");
+                    $(".DvBookForWeekend").css("display", "none");
+                    
                     $scope.RemoteEmployeeModel.VehicalNumber = response.data[0].VehicalNumber;
                     $scope.RemoteEmployeeModel.GuestAccessCardIssue = response.data[0].GuestAccessCardIssue;
                     $scope.RemoteEmployeeModel.DeafultGuestCardNumber = response.data[0].DeafultGuestCardNumber;
