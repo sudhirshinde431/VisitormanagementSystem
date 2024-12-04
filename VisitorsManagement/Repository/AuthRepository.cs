@@ -75,15 +75,24 @@ namespace VisitorsManagement.Repository
                     var ExpiredVM = $@"UPDATE tbl_VM_Appointment
 	                                SET STATUS = 'Expired',
 	                                UpdatedDate=GETDATE()
-	                                WHERE DATE < GetDate()
+	                                WHERE DATE < CONVERT(VARCHAR(10), GETDATE(), 120)
 		                            AND STATUS = 'Open'
 		                            OR  STATUS='Checked In'";
                     await _genericRepository.GetAsync<string>(ExpiredVM, null);
 
+
+                    var ExpiredRE = $@"UPDATE RemoteEmployee
+	                                SET STATUS = 'Expired',
+	                                UpdatedDate=GETDATE()
+	                                WHERE CONVERT(VARCHAR(10),CheckOutDateTime, 120) < CONVERT(VARCHAR(10), GETDATE(), 120)
+		                            AND STATUS = 'Open'
+		                            OR  STATUS='Check In'";
+                    await _genericRepository.GetAsync<string>(ExpiredRE, null);
+
                     return currentUserDto;
                 }
                 else
-                    return null;
+                    return null;    
             }
             catch (Exception ex)
             {

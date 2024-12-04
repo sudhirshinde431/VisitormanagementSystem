@@ -67,7 +67,7 @@ namespace VisitorsManagement.Controllers
             return View();
         }
 
-      
+
         public async Task<ActionResult> getAllAppointment(VMFilter filter)
         {
             try
@@ -80,7 +80,7 @@ namespace VisitorsManagement.Controllers
                     filter.UserId = userId;
                 }
 
-                IEnumerable<VM> result = await _visitorsManagementRepository.GetVisitors(filter);              
+                IEnumerable<VM> result = await _visitorsManagementRepository.GetVisitors(filter);
                 return Json(result);
             }
 
@@ -124,91 +124,139 @@ namespace VisitorsManagement.Controllers
                             string RepresentingCompany = vmmodel.RepresentingCompany;
                             string PurposeOfVisit = vmmodel.PurposeToVisit;
                             string AppointmentNo = vM.AppointmentNo;
+                            string DirectApproval = "No";
+                            if (vmmodel.DirectApproval == "True")
+                            {
+                                DirectApproval = "Yes";
+                            }
                             string applicationURL = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
 
-                            if (Convert.ToString(Session["RoleName"]) == "Security")
+                            if (vmmodel.DirectApproval == "True")
                             {
-                                var nameAndEmail = await _visitorsManagementRepository.GetVisitingPersonEmail(vmmodel.PersonToVisitID);
+
+                                string DETAILHEADER = "Appointment of Visitor " + vM.VisitorName + " has been direct approved,";
+
+                                string BatchNo = vM.GatePassNumber;
+                                //string applicationURL = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+
+
                                 string body = string.Empty;
+                                //string path = Path.Combine(_hostEnvironment.ContentRootPath, "EmailTemplate\\AppiontmentRaised.html");
                                 //string path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{"EmailTemplate\\AppiontmentRaised.html"}");
 
-                                //string applicationURL = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
-                                using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/EmailTemplate/AppiontmentRaisedBySecurity.html")))
+                                string htmlFilePath = string.Empty;
+
+                                htmlFilePath = System.Web.HttpContext.Current.Server.MapPath("~/EmailTemplate/DirectApproved.html");
+
+                                using (StreamReader reader = new StreamReader(htmlFilePath))
                                 {
                                     body = reader.ReadToEnd();
                                 }
-                                body = body.Replace("{{VisitingPersonName}}", VisitingPersonName);
+                                body = body.Replace("{{DETAILHEADER}}", DETAILHEADER);
+                                body = body.Replace("{{BodyHeader}}", "Appointment Details are as follows,");
+
                                 body = body.Replace("{{VisitorsName}}", VisitorsName);
+                                body = body.Replace("{{VisitingPersonName}}", VisitingPersonName);
                                 body = body.Replace("{{DateDetail}}", DateDetail);
-                                body = body.Replace("{{RemarkDetail}}", vmmodel.Remark);
+                                body = body.Replace("{{RemarkDetail}}", vM.Remark);
                                 body = body.Replace("{{CompanyName}}", RepresentingCompany);
                                 body = body.Replace("{{PurposeOfVisit}}", PurposeOfVisit);
-                                body = body.Replace("{{VisitTo}}", nameAndEmail.Item1);
+                                body = body.Replace("{{VisitTo}}", vM.PersonToVisitName);
                                 body = body.Replace("{{AppointmentNo}}", AppointmentNo);
-                                //string yesLink = applicationURL +  @"/VM/ApproveRejectAppointment?appointmentId=" + result + "&status=Open";
-                                //string noLink = applicationURL +  @"/VM/ApproveRejectAppointment?appointmentId=" + result + "&status=Rejected";
+                                body = body.Replace("{{BatchNo}}", BatchNo);
+                                //body = body.Replace("{WebsiteURL}", applicationURL);
 
-                                string approveRejectUrl = applicationURL + @"/VM/AppointmentApproval?appointmentId=" + DB.encrypt(result.ToString());
-
-                                body = body.Replace("{{approveRejectURL}}", approveRejectUrl);
-
-
-
-                                DB.SendMailAsync(nameAndEmail.Item2, body, "Security raised as appointment for " + vmmodel.VisitorName);
+                                DB.SendMailAsync(vM.PersonToVisitEmailID + "," + vM.VisitorsEmails, body, DETAILHEADER);
+                                clsResponse.isSuccessful = true;
 
                             }
                             else
                             {
-                                string body = string.Empty;
-                                //string path = Path.Combine(_hostEnvironment.ContentRootPath, "EmailTemplate\\AppiontmentRaised.html");
-                                //string path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{"EmailTemplate\\AppiontmentRaised.html"}");
-                                using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/EmailTemplate/AppiontmentRaised.html")))
+                                if (Convert.ToString(Session["RoleName"]) == "Security")
                                 {
-                                    body = reader.ReadToEnd();
+                                    var nameAndEmail = await _visitorsManagementRepository.GetVisitingPersonEmail(vmmodel.PersonToVisitID);
+                                    string body = string.Empty;
+                                    //string path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{"EmailTemplate\\AppiontmentRaised.html"}");
+
+                                    //string applicationURL = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+                                    using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/EmailTemplate/AppiontmentRaisedBySecurity.html")))
+                                    {
+                                        body = reader.ReadToEnd();
+                                    }
+                                    body = body.Replace("{{VisitingPersonName}}", VisitingPersonName);
+                                    body = body.Replace("{{VisitorsName}}", VisitorsName);
+                                    body = body.Replace("{{DateDetail}}", DateDetail);
+                                    body = body.Replace("{{RemarkDetail}}", vmmodel.Remark);
+                                    body = body.Replace("{{CompanyName}}", RepresentingCompany);
+                                    body = body.Replace("{{PurposeOfVisit}}", PurposeOfVisit);
+                                    body = body.Replace("{{VisitTo}}", nameAndEmail.Item1);
+                                    body = body.Replace("{{AppointmentNo}}", AppointmentNo);
+                                    //string yesLink = applicationURL +  @"/VM/ApproveRejectAppointment?appointmentId=" + result + "&status=Open";
+                                    //string noLink = applicationURL +  @"/VM/ApproveRejectAppointment?appointmentId=" + result + "&status=Rejected";
+
+                                    string approveRejectUrl = applicationURL + @"/VM/AppointmentApproval?appointmentId=" + DB.encrypt(result.ToString());
+
+                                    body = body.Replace("{{approveRejectURL}}", approveRejectUrl);
+
+
+
+                                    DB.SendMailAsync(nameAndEmail.Item2, body, "Security raised as appointment for " + vmmodel.VisitorName);
+
                                 }
-                                body = body.Replace("{{VisitingPersonName}}", VisitingPersonName);
-                                body = body.Replace("{{VisitorsName}}", VisitorsName);
-                                body = body.Replace("{{DateDetail}}", DateDetail);
-                                body = body.Replace("{{RemarkDetail}}", vmmodel.Remark);
-                                body = body.Replace("{{CompanyName}}", RepresentingCompany);
-                                body = body.Replace("{{PurposeOfVisit}}", PurposeOfVisit);
-                                body = body.Replace("{{VisitTo}}", Convert.ToString(Session["UserFullName"]));
-                                body = body.Replace("{{AppointmentNo}}", AppointmentNo);
-                                string checkInUrl = applicationURL + @"/VM/CheckIn?appointmentId=" + DB.encrypt(result.ToString());
-
-                                Url generator = new Url(checkInUrl);
-                                string payload = generator.ToString();
-
-                                QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                                QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
-                                QRCode qrCode = new QRCode(qrCodeData);
-                                var qrCodeAsBitmap = qrCode.GetGraphic(20);
-
-                                var qrBytes = DB.ImageToByte(qrCodeAsBitmap);
-
-                                string fileName = DB.RandomString(5, false);
-
-                                //if (!System.IO.Directory.Exists(Server.MapPath("~/Downloads/")))
-                                //    System.IO.Directory.CreateDirectory(Server.MapPath("~/Downloads/"));
-
-                                using (System.Drawing.Image image = System.Drawing.Image.FromStream(new MemoryStream(qrBytes)))
+                                else
                                 {
-                                    image.Save(Server.MapPath("~/Downloads/") + fileName + ".jpg", ImageFormat.Jpeg);  // Or Png
-                                    image.Dispose();
+                                    string body = string.Empty;
+                                    //string path = Path.Combine(_hostEnvironment.ContentRootPath, "EmailTemplate\\AppiontmentRaised.html");
+                                    //string path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\{"EmailTemplate\\AppiontmentRaised.html"}");
+                                    using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/EmailTemplate/AppiontmentRaised.html")))
+                                    {
+                                        body = reader.ReadToEnd();
+                                    }
+                                    body = body.Replace("{{VisitingPersonName}}", VisitingPersonName);
+                                    body = body.Replace("{{VisitorsName}}", VisitorsName);
+                                    body = body.Replace("{{DateDetail}}", DateDetail);
+                                    body = body.Replace("{{RemarkDetail}}", vmmodel.Remark);
+                                    body = body.Replace("{{CompanyName}}", RepresentingCompany);
+                                    body = body.Replace("{{PurposeOfVisit}}", PurposeOfVisit);
+                                    body = body.Replace("{{VisitTo}}", Convert.ToString(Session["UserFullName"]));
+                                    body = body.Replace("{{AppointmentNo}}", AppointmentNo);
+                                    body = body.Replace("{{DirectApproval}}", DirectApproval);
+                                    string checkInUrl = applicationURL + @"/VM/CheckIn?appointmentId=" + DB.encrypt(result.ToString());
+
+                                    Url generator = new Url(checkInUrl);
+                                    string payload = generator.ToString();
+
+                                    QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                                    QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
+                                    QRCode qrCode = new QRCode(qrCodeData);
+                                    var qrCodeAsBitmap = qrCode.GetGraphic(20);
+
+                                    var qrBytes = DB.ImageToByte(qrCodeAsBitmap);
+
+                                    string fileName = DB.RandomString(5, false);
+
+                                    //if (!System.IO.Directory.Exists(Server.MapPath("~/Downloads/")))
+                                    //    System.IO.Directory.CreateDirectory(Server.MapPath("~/Downloads/"));
+
+                                    using (System.Drawing.Image image = System.Drawing.Image.FromStream(new MemoryStream(qrBytes)))
+                                    {
+                                        image.Save(Server.MapPath("~/Downloads/") + fileName + ".jpg", ImageFormat.Jpeg);  // Or Png
+                                        image.Dispose();
+                                    }
+
+                                    //var i = Image.FromStream(new MemoryStream(qrBytes));
+
+                                    //var i2 = new Bitmap(i);
+                                    //i2.Save(Server.MapPath("~/Downloads/") + fileName + ".jpg", ImageFormat.Jpeg);
+
+                                    //qrCodeAsBitmap.Save("QRcodeImage", System.Drawing.Imaging.ImageFormat.Png);
+                                    string folderPath = Server.MapPath("~/Downloads/");
+                                    DB.deleteOldUnusedFiles(folderPath);
+
+                                    //body = body.Replace("{WebsiteURL}", applicationURL);
+                                    DB.SendMailAsync(vmmodel.VisitorsEmails + "," + Convert.ToString(Session["EmailId"]), body, "Visitor's appointment raised for " + vmmodel.VisitorName, "Downloads/" + fileName + ".jpg");
+                                    //EmailManager.SendEmail("Visitor's appointment raised for " + filter.VisitorName, body, filter.VisitorsEmails + "," + _workContext.currentUserDto.EmailID);
                                 }
-
-                                //var i = Image.FromStream(new MemoryStream(qrBytes));
-
-                                //var i2 = new Bitmap(i);
-                                //i2.Save(Server.MapPath("~/Downloads/") + fileName + ".jpg", ImageFormat.Jpeg);
-
-                                //qrCodeAsBitmap.Save("QRcodeImage", System.Drawing.Imaging.ImageFormat.Png);
-                                string folderPath = Server.MapPath("~/Downloads/");
-                                DB.deleteOldUnusedFiles(folderPath);
-
-                                //body = body.Replace("{WebsiteURL}", applicationURL);
-                                DB.SendMailAsync(vmmodel.VisitorsEmails + "," + Convert.ToString(Session["EmailId"]), body, "Visitor's appointment raised for " + vmmodel.VisitorName, "Downloads/" + fileName + ".jpg");
-                                //EmailManager.SendEmail("Visitor's appointment raised for " + filter.VisitorName, body, filter.VisitorsEmails + "," + _workContext.currentUserDto.EmailID);
                             }
                             clsResponse.isSuccessful = true;
 
@@ -727,7 +775,7 @@ namespace VisitorsManagement.Controllers
                 Table tblCommonSection = new Table(ColstblCommonSection, true);
                 tblCommonSection.AddCell(addCellKeyValue("Appointment No: ", vm.AppointmentNo, true, 1, 8));
                 tblCommonSection.AddCell(addCellKeyValue("Appointment Date: ", vm.Date, true, 1, 8));
-                tblCommonSection.AddCell(addCellKeyValue("Visitor Card: ", vm.GatePassNumber==null?"": vm.GatePassNumber, true, 1, 8));
+                tblCommonSection.AddCell(addCellKeyValue("Visitor Card: ", vm.GatePassNumber == null ? "" : vm.GatePassNumber, true, 1, 8));
                 tblCommonSection.AddCell(addCellKeyValue("Visitor Name: ", vm.VisitorName, true, 2, 8));
                 tblCommonSection.AddCell(addCellKeyValue("Visit to: ", vm.PersonToVisitName, true, 1, 8));
                 tblCommonSection.AddCell(addCellKeyValue("Purpose to Visit: ", vm.PurposeToVisit, true, 1, 8));

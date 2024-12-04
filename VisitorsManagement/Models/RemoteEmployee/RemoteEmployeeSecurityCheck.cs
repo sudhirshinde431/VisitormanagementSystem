@@ -37,5 +37,7 @@ namespace VisitorsManagement.Models.RemoteEmployee
         public Int32 UpdatedBySC { get; set; }
         public string Re_Number { get; set; }
         public string Status { get; set; }
+
+        public bool? IsCheckInToday { get; set; }
     }
 }

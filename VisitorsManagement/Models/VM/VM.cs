@@ -72,5 +72,7 @@ namespace VisitorsManagement.Models
         public int? TotalCount { get; set; }
 
         public string DateInGlobalFormate { get; set; }
+
+        public string DirectApproval { get; set; }
     }
 }

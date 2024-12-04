@@ -1,4 +1,4 @@
-﻿<table style="width:350px;">
+﻿<table style="width:300px;">
     <tr>
         <td>
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="background-color: #fff;padding: 1em 1.75em; padding-bottom: 0; ">
@@ -9,20 +9,20 @@
                 </tr>
                 <tr><td style="height:15px;">&nbsp;</td></tr>
                 <tr>
-                    <td style="margin:0;color:#131313;">
-                        Your appointment has been scheduled.
+                    <td style="margin:0;color:#131313;font-size: 13px;">
+                        {{BodyHeader}}
                     </td>
                 </tr>
                 <tr><td style="height:5px;">&nbsp;</td></tr>
-                <tr>
+                <!--<tr>
                     <td>
                         Please show your "Visitor Gate Pass" at security check point of Husqvarna (India) Products Private Limited, Nashik.
                     </td>
-                </tr>
+                </tr>-->
                 <tr>
                     <td>
                         <br />
-                        <div style="width:350px;border:solid; height:600px; border-radius:60px; border-color:#002454;">
+                        <div style="width:350px;border:solid; height:400px; border-radius:60px; border-color:#002454;">
                             <div style="vertical-align: middle;text-align: center; border-bottom:solid 1px #002454; padding-bottom:4px; font-size:13px;">
                                 <!--<img height="30" src="../Content/Images/MiniLogo.jpg" />-->
                                 <img height="30" src="cid:MiniLogo">
@@ -51,6 +51,14 @@
                                         </td>
                                         <td style="width:50px;">
                                             <span style="color:#1a1aff">{{AppointmentNo}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr style="height:30px;">
+                                        <td style="width:50px;">
+                                            Visitor Card:
+                                        </td>
+                                        <td style="width:50px;">
+                                            <span style="color:#1a1aff">{{BatchNo}}</span>
                                         </td>
                                     </tr>
                                     <tr style="height:30px;">
@@ -92,20 +100,7 @@
                                         <td style="width:50px;">
                                             <span style="color:#1a1aff">{{RemarkDetail}}</span>
                                         </td>
-                                    </tr>
-                                    <tr style="height:30px;">
-                                        <td style="width:50px;">
-                                            Direct Approval:
-                                        </td>
-                                        <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{DirectApproval}}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" style="margin-top:5px; text-align:center;">
-                                            <img height="200" src="cid:QRCode">
-                                        </td>
-                                    </tr>
+                                    </tr>                                    
                                 </table>
                                 <span></span>
                             </div>
@@ -142,6 +137,4 @@
                     <td class="" style="">&nbsp;</td>
                 </tr>
             </table>
-        </td>
-    </tr>
 </table>

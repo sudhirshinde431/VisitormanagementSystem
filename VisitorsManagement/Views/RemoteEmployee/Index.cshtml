@@ -179,16 +179,26 @@
                                 <td class="s25" data-title="'Name'" sortable="'Name'" ng-bind="details.Name" ng-attr-title="{{details.Name}}"></td>
                                 <td class="s20" data-title="'Email ID'" sortable="'EmailID'" ng-bind="details.EmailID" ng-attr-title="{{details.EmailID}}"></td>
 
-                                <td class="s15" data-title="'Checkin Date Time'" sortable="'CheckinDateTime'" ng-bind="details.CheckinDateTime" ng-attr-title="{{details.CheckinDateTime}}"></td>
-                                <td class="s15" data-title="'Checked Out Date Time'" sortable="'CheckOutDateTime'" ng-bind="details.CheckOutDateTime" ng-attr-title="{{details.CheckOutDateTime}}"></td>
+                                <td class="s10" data-title="'Checkin Date Time'" sortable="'CheckinDateTime'" ng-bind="details.CheckinDateTime" ng-attr-title="{{details.CheckinDateTime}}"></td>
+                                <td class="s10" data-title="'Checked Out Date Time'" sortable="'CheckOutDateTime'" ng-bind="details.CheckOutDateTime" ng-attr-title="{{details.CheckOutDateTime}}"></td>
                                 <td class="s5" data-title="'Status'"
                                     sortable="'Status'" ng-bind="details.Status" ng-attr-title="{{details.Status}}"></td>
 
                                 <td ng-if="IsAccessable('UpdateRE')" data-title="'View'" class="s5">
-                                    <a href="" class="btn btn-link" ng-click="EditRemoteEmployee(details.Pkey)" title="View/Edit"> View/Edit </a>
+                                    <a href="" class="btn btn-link" ng-click="EditRemoteEmployee(details.Pkey,'View')" title="View/Edit"> View/Edit </a>
                                 </td>
-                                <td ng-if="IsAccessable('UpdateSC')" data-title="'Security Check'" class="s5">
-                                    <a href="" class="btn btn-link" ng-click="ViewSecurityCheck(details.Pkey)" title="View/Edit"> Security Check </a>
+                                <td class="s15" ng-if="IsAccessable('UpdateSC')" data-title="'Security Check'">
+                                    <a href="" class="btn btn-link" ng-click="ViewSecurityCheck(details.Pkey,'View')" title="View/Edit"> View </a>
+                                    <button ng-if="isSecurityRole && details.IsCheckInToday && details.Status == 'Open'"
+                                            ng-click="ViewSecurityCheck(details.Pkey,'Check In')"
+                                            type="button" class="btn btn-success ml-1 gridButtons">
+                                        Check In
+                                    </button>
+                                    <button ng-if="isSecurityRole && details.IsCheckInToday && details.Status == 'Check In'"
+                                            ng-click="ViewSecurityCheck(details.Pkey,'Checked Out')"
+                                            type="button" class="btn btn-danger ml-1 gridButtons">
+                                        Check Out
+                                    </button>
                                 </td>
                             </tr>
                         </table>
@@ -212,7 +222,7 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="row">
-                                  
+
                                         <div id="DvRENumber" class="col-4">
                                             <div class="form-group">
                                                 <label>RE Number</label>
@@ -251,47 +261,33 @@
                                             <div class="form-group">
                                                 <label>Check in date and time </label>
                                                 <div class="input-append date dvCheckinDateTime">
-                                                    <input type="text" ng-disabled="DisableCOntrolOnEdit" id="CheckinDateTime" placeholder="Enter Check In Date" class="datepicker form-control readonly Date" ><span  class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
+                                                    <input type="text" ng-disabled="DisableCOntrolOnEdit" id="CheckinDateTime" placeholder="Enter Check In Date" class="datepicker form-control readonly Date"><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
                                                 </div>
 
                                             </div>
                                         </div>
                                         <div class="col-4" id="sandbox-container">
                                             <div class="form-group">
-                                                <label>Check out date</label>
+                                                <label>Check out date and time</label>
                                                 <div class="input-append date dvCheckOutDateTime">
-                                                    <input type="text" ng-disabled="DisableCOntrolOnEditAdmin" id="CheckOutDateTime" placeholder="Enter Check Out Date" class="datepicker form-control readonly Date" ><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
+                                                    <input type="text" ng-disabled="DisableCOntrolOnEditAdmin" id="CheckOutDateTime" placeholder="Enter Check Out Date" class="datepicker form-control readonly Date"><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
                                                 </div>
-                       
+
                                             </div>
                                         </div>
                                         <div class="col-4" id="DvBookForWeekend" style="display:none">
                                             <div>
-                                                <label>Book for Weekend's</label>                                               
-                                                <input class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched" 
-                                                 ng-disabled="DisableCOntrolOnEditAdmin" id="BookForWeekend" type="checkbox" value="true" style="">
-
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label>Is Vehical Parked On Premises</label>
-                                               
+                                                <label>Book for Weekend's</label>
                                                 <input class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched"
-                                                       ng-disabled="DisableCOntrolOnEditAdmin" id="IsVehicalParkedOnPremises" type="checkbox" value="true" style=""  onclick="IsVehicalParkedOnPremisesClick()" >
+                                                       ng-disabled="DisableCOntrolOnEditAdmin" id="BookForWeekend" type="checkbox" value="true" style="">
 
                                             </div>
                                         </div>
-                                        <div class="col-4" id="DvVichalNumber" style="display:none">
-                                            <div class="form-group">
-                                                <label>Vehical Number</label>
-                                                <input type="text" ng-disabled="DisableCOntrolOnEditAdmin" id="VehicalNumber" ng-model="RemoteEmployeeModel.VehicalNumber" maxlength="80" class="form-control" placeholder="Vehical Number" />
-                                            </div>
-                                        </div>
+
 
                                     </div>
 
-                                  
+
                                     <div class="row">
                                         <div class="col-8">
                                             <div class="form-group">
@@ -306,6 +302,43 @@
                                                 @*<label id="status"><h2 style="color:">{{}}</h2></label>*@
                                                 <h3 class="text-success" id="RemoteEmployStatus">{{ RemoteEmployeeModel.Status }}</h3>
                                                 <input type="hidden" id="TxtStatus" ng-model="RemoteEmployeeModel.Status" value="Open" placeholder="Status" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" ng-if="RequestFor=='View'">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label>Vehical Number</label>
+                                                <br>
+                                                <h5> {{RemoteEmployeeModel.VehicalNumber}}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label>Guest Access Card Issued?</label>
+                                                <br>
+                                                <h5> {{RemoteEmployeeModel.GuestAccessCardIssue}}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label>Deafult Guest Card Number</label>
+                                                <br>
+                                                <h5> {{RemoteEmployeeModel.DeafultGuestCardNumber}}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label>Access Card Collection Status</label>
+                                                <br>
+                                                <h5> {{RemoteEmployeeModel.AccessCardCollectionStatus}}</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label>Escalation</label>
+                                                <br>
+                                                <h5> {{RemoteEmployeeModel.Escalation}}</h5>
                                             </div>
                                         </div>
                                     </div>
@@ -337,10 +370,13 @@
                                 <div class="col-12">
                                 </div>
                                 <div class="col-12">
-                                    <div class="row">
+                                    <input type="hidden" id="HcodeSecurityCheckModel_Pkey" ng-model="RemoteEmployeeSecurityCheck.Pkey" />
+                                    <input type="hidden" id="TxtStatusSc" ng-model="RemoteEmployeeSecurityCheck.Status" value="Open" placeholder="Status" />
+
+                                    <div class="row" ng-if="RequestFor=='View'">
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <input type="hidden" id="HcodeSecurityCheckModel_Pkey" ng-model="RemoteEmployeeSecurityCheck.Pkey" />
+
                                                 <label>H Code</label>
                                                 <div ng-disabled="DisableSecuirtyCheck" id="HcodeSecurityCheckModel" ng-model="RemoteEmployeeSecurityCheck.Hcode" maxlength="80" required angucomplete-alt placeholder="H Code" pause="100" selected-object="SelectedRemoteEmployeeForAutocomplete"
                                                      local-data="HcodeAutoCompleteData" search-fields="Hcode" description-field="Name" override-suggestions="true" title-field="Hcode"
@@ -363,7 +399,7 @@
 
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row" ng-if="RequestFor=='View'">
                                         <div class="col-4" id="sandbox-container">
                                             <div class="form-group">
                                                 <label>Check in date</label>
@@ -376,75 +412,69 @@
                                             <div class="form-group">
                                                 <label>Check out date</label>
                                                 <div class="input-append date dvCheckOutDateTimeSc">
-                                                    <input ng-disabled="DisableSecuirtyCheckMainCOntrols" type="text" id="CheckOutDateTimeSc" placeholder="Enter Check Out Date" class="datepicker form-control readonly Date" ><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
+                                                    <input ng-disabled="DisableSecuirtyCheck" type="text" id="CheckOutDateTimeSc" placeholder="Enter Check Out Date" class="datepicker form-control readonly Date"><span class="input-group-addon pl-1"><i class='bx bx-calendar' style='font-size:22px'></i></span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label>Is Vehical Parked On Premises</label>
-                                                <input  type="checkbox" ng-disabled="DisableSecuirtyCheck" 
-                                                       class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched"
-                                                       value="true" id="IsVehicalParkedOnPremisesSc" onclick="IsVehicalParkedOnPremisesClick()" />
-                                            </div>
-                                        </div>
+
 
 
                                     </div>
-
-                                    <div class="row" id="DvVichalNumbersc" style="display:none">
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label>Vehical Number</label>
-                                                <input type="text" ng-disabled="DisableSecuirtyCheck" id="VehicalNumber" ng-model="RemoteEmployeeSecurityCheck.VehicalNumber" maxlength="80" class="form-control" placeholder="Vehical Number" />
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="row">
+                                    <div class="row" ng-if="RequestFor=='View'">
                                         <div class="col-8">
                                             <div class="form-group">
                                                 <label>Comments</label>
-                                                <textarea rows="5" id="Comments" ng-disabled="DisableSecuirtyCheck" ng-model="RemoteEmployeeSecurityCheck.Comments" style="min-width:100%;" maxlength="200" class="form-control" placeholder="Enter Comment.."></textarea>
+                                                <textarea rows="5" id="Comments" ng-disabled="DisableSecuirtyCheckMainCOntrols" ng-model="RemoteEmployeeSecurityCheck.Comments" style="min-width:100%;" maxlength="200" class="form-control" placeholder="Enter Comment.."></textarea>
                                             </div>
                                         </div>
+
+                                    </div>
+
+                                    <div class="row" ng-if="RequestFor=='View' || RequestFor=='Check In'">
                                         <div class="col-4">
                                             <div class="form-group">
-
-                                                <label>Status</label><br />
-                                                @*<label id="status"><h2 style="color:">{{}}</h2></label>*@
-                                            <h3 class="text-success" id="RemoteEmployStatus">{{ RemoteEmployeeSecurityCheck.Status }}</h3>
-                                                <input type="hidden" id="TxtStatus" ng-model="RemoteEmployeeSecurityCheck.Status" value="Open" placeholder="Status" />
+                                                <label>Is Vehical Parked On Premises</label>
+                                                <input type="checkbox" ng-disabled="DisableSecuirtyCheckMainCOntrols"
+                                                       class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched"
+                                                       value="true" id="IsVehicalParkedOnPremises" onclick="IsVehicalParkedOnPremisesClick()" />
                                             </div>
                                         </div>
+                                        <div class="col-4" style="display:none" id="DvVichalNumber" ng-if="RequestFor=='View' || RequestFor=='Check In'">
+                                            <div class="form-group">
+                                                <label>Vehical Number</label>
+                                                <input type="text" ng-disabled="DisableSecuirtyCheckMainCOntrols" id="VehicalNumber" ng-model="RemoteEmployeeSecurityCheck.VehicalNumber" maxlength="80" class="form-control" placeholder="Vehical Number" />
+                                            </div>
+                                        </div>
+
                                     </div>
+
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-4" ng-if="RequestFor=='View' || RequestFor=='Checked Out' || RequestFor=='Check In'">
                                             <div class="form-group">
                                                 <label>Guest Access Card Issued</label>
-                                                <select ng-disabled="DisableSecuirtyCheckMainCOntrols" class="form-control selectpicker show-tick" title="Is Card Issued" onchange="SelectedddlGuestAccessCardIssue()" data-live-search="false" id="ddlGuestAccessCardIssue"
+                                                <select ng-disabled="DisableSecuirtyCheckMainCOntrols" class="form-control show-tick" title="Is Card Issued" onchange="SelectedddlGuestAccessCardIssue()" data-live-search="false" id="ddlGuestAccessCardIssue"
                                                         data-size="8" required>
                                                     <option ng-repeat="purpose in AccessCardIssueList" value='{{ purpose.text }}'>{{ purpose.text }}</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-4" id="dvAccessCardCollected" style="display:none">
+                                        <div class="col-4" id="dvAccessCardCollected" style="display:none" ng-if="RequestFor=='View' || RequestFor=='Checked Out' || RequestFor=='Check In'">
                                             <div class="form-group">
                                                 <label>Guest Access Card Collected</label>
-                                                <select ng-disabled="DisableSecuirtyCheckMainCOntrols" class="form-control selectpicker show-tick" onchange="SelectedIsAccessCardCollected()" title="Is Card Collected" data-live-search="false" id="ddlAccessCardCollected"
+                                                <select ng-disabled="DisableSecuirtyCheckMainCOntrols" class="form-control  show-tick" onchange="SelectedIsAccessCardCollected()" title="Is Card Collected" data-live-search="false" id="ddlAccessCardCollected"
                                                         data-size="8" required>
                                                     <option ng-repeat="purpose in AccessCardCollectedList" value='{{ purpose.text }}'>{{ purpose.text }}</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-4" id="DvDefaultAccessCardNumber" style="display:none">
+                                        <div class="col-4" id="DvDefaultAccessCardNumber" style="display:none" ng-if="RequestFor=='View' || RequestFor=='Checked Out' || RequestFor=='Check In'">
                                             <div class="form-group">
                                                 <label>Default Guest Card Number</label>
                                                 <input ng-disabled="DisableSecuirtyCheckMainCOntrols" type="text" id="DeafultGuestCardNumber" ng-model="RemoteEmployeeSecurityCheck.DeafultGuestCardNumber" maxlength="200" class="form-control" placeholder="Default Guest Card Number" />
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row" id="DvEscalation" style="display:none">
+                                    <div class="row" id="DvEscalation" style="display:none" ng-if="RequestFor=='View' || RequestFor=='Checked Out' || RequestFor=='Check In'">
                                         <div class="col-8">
                                             <div class="form-group">
                                                 <label>Escalation</label>
@@ -458,7 +488,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button ng-if="!DisableSecuirtyCheckMainCOntrols" type="button" class="btn btn-local" ng-click="SaveSecurityCheck()">Save</button>
+                        <button id="btnSaveSecurityCHeck" ng-if="RequestFor=='Check In' || RequestFor=='Checked Out'" type="button" class="btn btn-local" ng-click="SaveSecurityCheck()">Save</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -504,8 +534,8 @@
             showMeridian: true,
         });
 
-    
-       
+
+
         $('#CheckOutDateTime')
             .datetimepicker()
             .on('changeDate', function (ev) {
@@ -527,8 +557,8 @@
 
         $('#CheckinDateTime')
             .datetimepicker()
-            .on('changeDate', function (ev) {  
-                
+            .on('changeDate', function (ev) {
+
                 var hasWeekendExsist = hasWeekend(extractDate($("#CheckinDateTime").val()), extractDate($('#CheckOutDateTime').val()));
                 if (hasWeekendExsist == true) {
 
@@ -537,8 +567,8 @@
                 else {
                     $("#DvBookForWeekend").css("display", "none");
                 }
-    });
-  
+            });
+
 
         function hasWeekend(startDate, endDate) {
             // Convert input strings to Date objects
@@ -557,7 +587,8 @@
             return false; // No weekend found between the dates
         }
 
-      
+
+
         function IsVehicalParkedOnPremisesClick() {
             if ($("#IsVehicalParkedOnPremises").is(':checked')) {
                 $("#DvVichalNumber").css("display", "");
@@ -565,7 +596,6 @@
                 $("#DvVichalNumber").css("display", "none");
             }
         }
-
         var freezeTable = new FreezeTable('.freeze-table', {
             'scrollable': true,
         });
@@ -593,10 +623,10 @@
 
             }
         }
-      
+
 
         $(document).ready(function () {
-        
+
         });
 
     </script>

@@ -134,11 +134,14 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                
-                                                <label>Status</label><br />
-                                               @*<label id="status"><h2 style="color:">{{}}</h2></label>*@
+
+                                                <label>Status </label> <br />
+                                                @*<label id="status"><h2 style="color:">{{}}</h2></label>*@
                                                 <h3 ng-class="AppointmentModel.Status == StatusMedia.Reject || AppointmentModel.Status == StatusMedia.Cancel ? 'text-danger' : 'text-success'">{{ AppointmentModel.Status }}</h3>
+
+
                                             </div>
+                                          
                                         </div>
                                         @*<div angucomplete-alt id="txtCustomers" placeholder="Customer Name" pause="100" selected-object="SelectedCustomer"
                                              local-data="Customers" search-fields="ContactName" title-field="ContactName"
@@ -146,13 +149,23 @@
                                         </div>*@
                                          
                                     </div>
-                                </div>
+                                    <div class="row" ng-if="!isSecurityRole">
+                                        <div class="col-4">
+                                            <div class="form-group" style="display:flex">
+
+                                                <input ng-click="DirectApporvalClick()" class="form-control checkBox ng-valid ng-dirty ng-valid-parse ng-not-empty ng-touched"
+                                                       id="DirectApproval" ng-model="AppointmentModel.DirectApproval" type="checkbox" value="true" style=""><h5 class="text-success"> Direct approval</h5>
+
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
                             </div>
 
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-local" ng-if="AppointmentModel.Status == StatusMedia.Open || AppointmentModel.Status == StatusMedia.Waitingforapproval" ng-click="VM_saveAppointment()">Save</button>
+                        <button type="button" class="btn btn-local" ng-if="AppointmentModel.Status == StatusMedia.Open || AppointmentModel.Status == StatusMedia.Waitingforapproval || AppointmentModel.Status == StatusMedia.DirectApproval" ng-click="VM_saveAppointment()">Save</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -273,7 +286,7 @@
                                     <th class="s20">
                                         Visitors Name
                                     </th>
-                                    <th class="s15">
+                                    <th class="s10">
                                         Visit To
                                     </th>
                                     <th class="s10">
@@ -288,15 +301,18 @@
                                     <th class="s5">
                                         OutTime
                                     </th>
-                                    <th class="s5">
+                                    <th class="s4">
                                         Status
+                                    </th>
+                                    <th class="s15">
+                                        Representing Company
                                     </th>
                                     <th class="s10 noExl">
                                         View
                                     </th>
                                 </tr>
                             </thead>
-                            <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups | filter:VM_getAllAppointment "> {{$groups}}
+                            <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups "> {{$groups}}
                                 <td colspan="8">
                                     <a href="" ng-click="switchGroup(group, $parent.$groups)">
                                         <span class="glyphicon" ng-class="{ 'fas fa-chevron-right': group.$hideRows, 'fas fa-chevron-down': !group.$hideRows }"></span>
@@ -309,17 +325,18 @@
                                 <td ng-attr-title="{{details.AppointmentNo}}">{{details.AppointmentNo}}</td>
                                 <td ng-attr-title="{{details.VisitorName}}">{{details.VisitorName}}</td>
                                 <td ng-attr-title="{{details.PersonToVisitName}}">{{details.PersonToVisitName}}</td>
-                                <td ng-attr-title="{{details.strDate}}">{{details.strDate}}</td>                               
+                                <td ng-attr-title="{{details.strDate}}">{{details.strDate}}</td>
                                 <td ng-if="isSecurityRole" ng-attr-title="{{details.PersonToVisitName}}">{{details.PersonToVisitName}}</td>
                                 <td ng-attr-title="{{details.InTime}}">{{details.InTime}}</td>
                                 <td ng-attr-title="{{details.OutTime}}">{{details.OutTime}}</td>
                                 <td ng-attr-title="{{details.Status}}">{{details.Status}}</td>
+                                <td ng-attr-title="{{details.RepresentingCompany}}">{{details.RepresentingCompany}}</td>
                                 <td data-title="'View'" class="s10 noExl">
                                     <a title="View / Edit" class="editButton" ng-click="EditDetails(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-edit-alt'></i></a>
-                                    <a ng-if="details.Status == StatusMedia.Waitingforapproval && !isSecurityRole" title="Approve Appointment" class="editButton" ng-click="approveAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-check'></i></a>
-                                    <a ng-if="details.Status == StatusMedia.Waitingforapproval && !isSecurityRole" title="Reject Appointment" class="editButton" ng-click="rejectAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-x'></i></a>
+                                    <a ng-if="(details.Status == StatusMedia.Waitingforapproval && details.Status != StatusMedia.DirectApproval && !isSecurityRole" title="Approve Appointment" class="editButton" ng-click="approveAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-check'></i></a>
+                                    <a ng-if="(details.Status == StatusMedia.Waitingforapproval && details.Status != StatusMedia.DirectApproval && !isSecurityRole" title="Reject Appointment" class="editButton" ng-click="rejectAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-x'></i></a>
                                     <a ng-if="details.Status == StatusMedia.Open && !isSecurityRole" title="Cancel Appointment" class="editButton" ng-click="CancelAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-user-x'></i></a>
-                                    <button ng-if="isSecurityRole && details.IsCheckInToday && details.Status == StatusMedia.Open" type="button" ng-click="CheckInAppointment(details.AppointmentID,details.VisitorName,details.NumberOfPerson)" class="btn btn-success ml-1 gridButtons">Check In</button>
+                                    <button ng-if="isSecurityRole && details.IsCheckInToday && (details.Status == StatusMedia.Open || details.Status == StatusMedia.DirectApproval)" type="button" ng-click="CheckInAppointment(details.AppointmentID,details.VisitorName,details.NumberOfPerson)" class="btn btn-success ml-1 gridButtons">Check In</button>
                                     <button ng-if="isSecurityRole && details.Status == StatusMedia.CheckIn" type="button" ng-click="CheckOut(details.AppointmentID,details.VisitorName)" class="btn btn-danger ml-1 gridButtons">Check Out</button>
                                     <a href="" ng-if="isSecurityRole && details.Status == StatusMedia.CheckIn" class="btn btn-link" ng-click="downloadReport(details.AppointmentID)" title="View"> Print </a>
                                 </td>

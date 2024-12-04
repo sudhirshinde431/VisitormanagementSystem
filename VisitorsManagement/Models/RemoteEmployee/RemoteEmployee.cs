@@ -48,6 +48,7 @@ namespace VisitorsManagement.Models.RemoteEmployee
         public string SecurityCheckDoneBy { get; set; }
         public string Status { get; set; }
         public string Re_Number { get; set; }
+        public bool? IsCheckInToday { get; set; }
         
 
         public List<VisitorsManagement.Models.RemoteEmployee.RemoteEmployee> remoteEmployee { get; set; }

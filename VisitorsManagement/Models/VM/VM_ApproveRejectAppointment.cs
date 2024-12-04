@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Documents;
 //using System.Text.Json.Serialization;
 
 namespace VisitorsManagement.Models
@@ -14,5 +15,7 @@ namespace VisitorsManagement.Models
         public int UpdatedBy { get; set; }
         [JsonIgnore]
         public DateTime UpdatedDate { get; set; }
+
+        public Boolean IsDirectApproved { get; set; }
     }
 }

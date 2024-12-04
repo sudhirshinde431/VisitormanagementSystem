@@ -393,6 +393,7 @@
     <Content Include="Content\Images\VM.png" />
     <Content Include="Content\Images\WP.jpg" />
     <Content Include="Content\toaster.min.css" />
+    <Content Include="EmailTemplate\DirectApproved.html" />
     <Content Include="EmailTemplate\RemoteEmployeeAccessCardNo.html" />
     <Content Include="EmailTemplate\AppiontmentApprovals.html" />
     <Content Include="EmailTemplate\WorkPermit.html" />

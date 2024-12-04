@@ -25,6 +25,7 @@ namespace VisitorsManagement.Repository
 
         public async Task<IEnumerable<RemoteEmployee>> getRemoteEmployee(RemoteEmployeeFilter filter)
         {
+            DateTime currentDate = DB.getCurrentIndianDate();
 
             var sQuery = $@"SELECT
                             Pkey,Hcode,Name,RemoteEmployee.EmailID
@@ -71,7 +72,8 @@ when Status='Checked Out' Then
 3
 Else
 4
-END as SortOrder
+END as SortOrder,
+ 'IsCheckInToday' = CASE WHEN DATEDIFF(DAY, CAST(CheckinDateTime AS DATE), CAST('{currentDate.ToString("dd-MMM-yyyy")}' AS DATE)) = 0 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END
 
                             FROM [dbo].[RemoteEmployee]
                             LEFT JOIN tbl_Users as CreatedBy on
@@ -166,8 +168,12 @@ END as SortOrder
                 param.Add("Hcode", filter.Hcode);
                 var resultEmployee = await _genericRepository.GetAsync<RemoteEmployee>(sQuery, param);
 
+                if(resultEmployee!=null)
+                {
+                    result.FirstOrDefault().remoteEmployee = resultEmployee.ToList();
+                }
 
-                result.FirstOrDefault().remoteEmployee = resultEmployee.ToList();
+              
             }
 
             return result;
@@ -232,11 +238,12 @@ END as SortOrder
 
                     Double numberOfDays = CalculateDaysBetweenDates(Convert.ToDateTime(remoteEmployee.CheckinDateTime).Date,
                         Convert.ToDateTime(remoteEmployee.CheckOutDateTime).Date);
-                    if (numberOfDays == 0)
+                    if (numberOfDays == 0 || Convert.ToDateTime(remoteEmployee.CheckinDateTime).Date == Convert.ToDateTime(remoteEmployee.CheckOutDateTime).Date)
                     {
                         numberOfDays = 1;
                     }
-                    for (int i = 0; i < numberOfDays+1; i++)
+                  
+                    for (int i = 0; i < numberOfDays; i++)
                     {
                         DateTime CheckinDateTime = Convert.ToDateTime(remoteEmployee.CheckinDateTime);
                         TimeSpan CheckIntime = CheckinDateTime.TimeOfDay;
@@ -320,39 +327,79 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
 
             try
             {
+                DateTime currentDate = DB.getCurrentIndianDate();
 
-                sQuery = $@"UPDATE [dbo].[RemoteEmployee]
+                if (remoteEmployee.Status=="Check In")
+                {
+                    sQuery = $@"UPDATE [dbo].[RemoteEmployee]
                            SET 
                               [GuestAccessCardIssue] = @GuestAccessCardIssue
                               ,[AccessCardCollectionStatus] = @AccessCardCollectionStatus
                               ,[Escalation] = @Escalation 
-                              ,[DeafultGuestCardNumber] = @DeafultGuestCardNumber                             
-                              ,[CreatedBySC] = @CreatedBySC
+                              ,[DeafultGuestCardNumber] = @DeafultGuestCardNumber   
                               ,[UpdatedBySC] = @UpdatedBySC
-                              ,[CreatedDateSC] = @CreatedDateSC
-                              ,[UpdatedDateSC] = @UpdatedDateSC     
-                              ,[CheckOutDateTime]=@CheckOutDateTime
+                              ,[UpdatedDateSC] = @UpdatedDateSC  
                               ,[Status]=@Status
+                              ,[CheckinDateTime]=@CheckinDateTime
+,[IsVehicalParkedOnPremises]=@IsVehicalParkedOnPremises
+,[VehicalNumber]=@VehicalNumber
                          WHERE [Pkey] = @Pkey";
 
 
 
-                DynamicParameters param = new DynamicParameters();
-                param.Add("@AccessCardCollectionStatus", remoteEmployee.AccessCardCollectionStatus);
-                param.Add("@GuestAccessCardIssue", remoteEmployee.GuestAccessCardIssue);
-                param.Add("@Escalation", remoteEmployee.Escalation);
-                param.Add("@DeafultGuestCardNumber", remoteEmployee.DeafultGuestCardNumber);
-                param.Add("@CreatedBySC", remoteEmployee.CreatedBySC);
-                param.Add("@UpdatedBySC", remoteEmployee.UpdatedBySC);
-                param.Add("@CreatedDateSC", remoteEmployee.CreatedDateSC);
-                param.Add("@UpdatedDateSC", remoteEmployee.UpdatedDateSC);
-                param.Add("@Pkey", remoteEmployee.Pkey);
-                param.Add("@CheckOutDateTime", remoteEmployee.CheckOutDateTime);
-                param.Add("@Status", remoteEmployee.Status);
-                var result = await _genericRepository.ExecuteCommandAsync(sQuery, param);
-                ///var result = await _genericRepository.GetAsync<int>(sQuery, param);
+                    DynamicParameters param = new DynamicParameters();
+                    param.Add("@AccessCardCollectionStatus", remoteEmployee.AccessCardCollectionStatus);
+                    param.Add("@GuestAccessCardIssue", remoteEmployee.GuestAccessCardIssue);
+                    param.Add("@Escalation", remoteEmployee.Escalation);
+                    param.Add("@DeafultGuestCardNumber", remoteEmployee.DeafultGuestCardNumber);                   
+                    param.Add("@UpdatedBySC", remoteEmployee.UpdatedBySC);                 
+                    param.Add("@UpdatedDateSC", remoteEmployee.UpdatedDateSC);
+                    param.Add("@Pkey", remoteEmployee.Pkey);
+                    param.Add("@CheckinDateTime", currentDate);
+                    param.Add("@Status", remoteEmployee.Status);
+                    param.Add("@IsVehicalParkedOnPremises", remoteEmployee.IsVehicalParkedOnPremises);
+                    param.Add("@VehicalNumber", remoteEmployee.VehicalNumber);
+                    var result = await _genericRepository.ExecuteCommandAsync(sQuery, param);
+                    ///var result = await _genericRepository.GetAsync<int>(sQuery, param);
 
-                return result;
+                    return result;
+
+                }
+                else
+                {
+                    sQuery = $@"UPDATE [dbo].[RemoteEmployee]
+                           SET 
+                              [GuestAccessCardIssue] = @GuestAccessCardIssue
+                              ,[AccessCardCollectionStatus] = @AccessCardCollectionStatus
+                              ,[Escalation] = @Escalation 
+                              ,[DeafultGuestCardNumber] = @DeafultGuestCardNumber   
+                              ,[UpdatedBySC] = @UpdatedBySC
+                              ,[UpdatedDateSC] = @UpdatedDateSC     
+                              ,[CheckOutDateTime]=@CheckOutDateTime
+                              ,[Status]=@Status  
+
+                         WHERE [Pkey] = @Pkey";
+
+
+
+                    DynamicParameters param = new DynamicParameters();
+                    param.Add("@AccessCardCollectionStatus", remoteEmployee.AccessCardCollectionStatus);
+                    param.Add("@GuestAccessCardIssue", remoteEmployee.GuestAccessCardIssue);
+                    param.Add("@Escalation", remoteEmployee.Escalation);
+                    param.Add("@DeafultGuestCardNumber", remoteEmployee.DeafultGuestCardNumber);
+                    param.Add("@UpdatedBySC", remoteEmployee.UpdatedBySC);
+                    param.Add("@UpdatedDateSC", remoteEmployee.UpdatedDateSC);
+                    param.Add("@Pkey", remoteEmployee.Pkey);
+                    param.Add("@CheckOutDateTime", currentDate);
+                    param.Add("@Status", remoteEmployee.Status);                   
+                    var result = await _genericRepository.ExecuteCommandAsync(sQuery, param);
+                    ///var result = await _genericRepository.GetAsync<int>(sQuery, param);
+
+                    return result;
+
+                }
+
+                
 
 
             }

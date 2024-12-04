@@ -225,7 +225,8 @@ app.constant('constants', {
         'CheckIn': 'Checked In',
         'CheckOut': 'Checked Out',
         'Cancel': 'Cancelled',
-        'Reject': 'Rejected'
+        'Reject': 'Rejected',
+        'DirectApproval': 'Direct approval'
     },
 
     //WPStatus: {

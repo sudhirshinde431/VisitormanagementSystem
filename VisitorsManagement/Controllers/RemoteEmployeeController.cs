@@ -104,10 +104,15 @@ namespace VisitorsManagement.Controllers
                 if (RemoteEmployeeSecurityCheck.AccessCardCollectionStatus == "No" && string.IsNullOrEmpty(RemoteEmployeeSecurityCheck.Escalation))
                 {
                     ModelState.AddModelError("Escalation", "Escalation is required.");
+
+                }
+                if (RemoteEmployeeSecurityCheck.GuestAccessCardIssue == "Yes" && string.IsNullOrEmpty(RemoteEmployeeSecurityCheck.DeafultGuestCardNumber))
+                {
+                    ModelState.AddModelError("DeafultGuestCardNumber", "Deafult Guest Card Number is required.");
                 }
                 if (ModelState.IsValid)
                 {
-                  
+
 
                     RemoteEmployeeSecurityCheck.CreatedBySC = Convert.ToInt32(Session["UserID"]);
                     RemoteEmployeeSecurityCheck.CreatedDateSC = DateTime.UtcNow.Date.ToString("dd-MMM-yyyy");
@@ -138,7 +143,7 @@ namespace VisitorsManagement.Controllers
 
 
                         var EmIlId = ConfigurationManager.AppSettings["RemoteEmployeeCardNotCollectedEmailId"];
-                        if(!string.IsNullOrEmpty(EmIlId))
+                        if (!string.IsNullOrEmpty(EmIlId))
                         {
                             DB.SendMailAsync(EmIlId, body, "Remote Employee Card Not Collected For RE Number:" + getRemoteEmployee.FirstOrDefault().Re_Number);
 

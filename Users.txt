@@ -11,3 +11,34 @@ Vister Bame
 Visit to
 Date
 Company Name
+
+
+ $scope.RemoteEmployeeModel.Comments = $("#Comments").val();
+
+CheckinDateTimeSc
+CheckOutDateTimeSc
+
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var DateTimeNow = new Date();
+  const day = DateTimeNow.getDate();
+  const month = monthNames[DateTimeNow.getMonth()];
+  const year = DateTimeNow.getFullYear();
+  const hours = DateTimeNow.getHours();
+  const minutes = DateTimeNow.getMinutes();
+
+  const formattedDay = day < 10 ? '0' + day : day;
+  const formattedHours = hours < 10 ? '0' + hours : hours;
+  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+  var FinlDate = formattedDay + "-" + month + "-" + year + " " + formattedHours + ":" + formattedMinutes;
+  $("#CheckinDateTime").datepicker("setDate", FinlDate);
+
+dvCheckinDateTimeSc
+dvCheckOutDateTimeSc
+
+ng-disabled="DisableCOntrolOnEditAdmin"
+
+DIrect Approval- Emaill - 
+
+                <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups @*| filter:VM_getAllAppointment*@ "> {{$groups}}

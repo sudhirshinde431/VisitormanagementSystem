@@ -83,6 +83,18 @@ app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout,
         $('#ddlEmployee').selectpicker('refresh');
     });
 
+    var OldStatus = "";
+    $scope.DirectApporvalClick = function () {
+        if (OldStatus == "") {
+            OldStatus = $scope.AppointmentModel.Status;
+        }
+        if ($("#DirectApproval").is(':checked')) {
+            $scope.AppointmentModel.Status = "Direct approval";
+        } else {
+            $scope.AppointmentModel.Status = OldStatus;
+        }
+    };
+
     //SAVE Appointment details
     $scope.VM_saveAppointment = function () {
 
@@ -93,7 +105,7 @@ app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout,
         }
         $scope.AppointmentModel.VisitorPhoneNumber = $("#divVisitorPhoneNumber_value").val();
         $scope.AppointmentModel.VisitorName = $("#divVisitorVisitorName_value").val();
-
+        $scope.AppointmentModel.DirectApproval = $("#DirectApproval").is(':checked');
         //$scope.AppointmentModel.Address = "test";
         //$scope.AppointmentModel.Date = "16-Dec-2021";
         //$scope.AppointmentModel.NumberOfPerson = 1;
@@ -2289,6 +2301,8 @@ app.controller("CtrlReports", function ($scope, $http, myService, $timeout, Uplo
 
 app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeout, Upload, NgTableParams, $window, constants, toaster) {
     $scope.showTable = true;
+    $scope.RequestFor = "";
+
     $scope.RemoteEmployeeModel = {};
     $scope.HcodeAutoCompleteData = [];
     $scope.DisableCOntrolOnEdit = false;
@@ -2296,7 +2310,10 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
     $scope.RemoteEmployeeSecurityCheck = {};
     $scope.AccessCardIssueList = [{ text: 'Yes', value: 'Yes' }, { text: 'No', value: 'No' }];
     $scope.AccessCardCollectedList = [{ text: 'Yes', value: 'Yes' }, { text: 'No', value: 'No' }];
-
+    $scope.isSecurityRole = false;
+    if (localStorage.getItem("RoleName") == "Security") {
+        $scope.isSecurityRole = true;
+    }
     $scope.getAllRemoteEmployee = function () {
 
         var filter = { 'Hcode': '', FilterText: '' };
@@ -2349,6 +2366,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#IsVehicalParkedOnPremises").prop("checked", false);
         $("#BookForWeekend").prop("checked", false);
         $(".dvCheckinDateTime").find(".bx-calendar").css("display", "");
+        $scope.RequestFor = "Edit";
     }
     $scope.clearFormSecurityCheck = function () {
         $scope.RemoteEmployeeSecurityCheck = {};
@@ -2372,11 +2390,11 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $scope.clearForm();
         $scope.RemoteEmployeeSecurityCheck = {};
         $scope.RemoteEmployeeModel =
-        $scope.RemoteEmployeeModel.Status = "Open";
+            $scope.RemoteEmployeeModel.Status = "Open";
         $('#exampleModal').modal('show');
         $("#DvRENumber").css("display", "none");
-        
-        
+
+
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -2386,7 +2404,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         var year = DateTimeNow.getFullYear();
         var hours = DateTimeNow.getHours();
         var minutes = DateTimeNow.getMinutes();
-        
+
         var formattedDay = day < 10 ? '0' + day : day;
         var formattedHours = hours < 10 ? '0' + hours : hours;
         var formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
@@ -2409,12 +2427,13 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
 
         $("#CheckOutDateTime").datepicker("setDate", FinlEndDate);
         $("#CheckOutDateTime").val(FinlEndDate);
-        
+
 
         $('#RemoteEmployStatus').html('Open');
-        
+
     }
-    $scope.EditRemoteEmployee = function (Pkey) {
+    $scope.EditRemoteEmployee = function (Pkey, RequestFor) {
+        $scope.RequestFor = RequestFor;
         $scope.DisableCOntrolOnEdit = true;
         $scope.DisableCOntrolOnEditAdmin = false;
         $("#DvRENumber").css("display", "");
@@ -2439,8 +2458,10 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeModel.EmailID = response.data[0].EmailID;
                     $scope.RemoteEmployeeModel.CheckinDateTime = response.data[0].CheckinDateTime;
                     $scope.RemoteEmployeeModel.CheckOutDateTime = response.data[0].CheckOutDateTime;
+                    if (response.data[0].Status == "Open") {
+                        $scope.RequestFor = "Edit";
+                    }
 
-                   
                     $("#CheckOutDateTime").val(response.data[0].CheckOutDateTime);
                     $("#CheckinDateTime").val(response.data[0].CheckinDateTime);
 
@@ -2455,13 +2476,17 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     }
                     if (response.data[0].Status == "Checked Out") {
                         $scope.DisableCOntrolOnEditAdmin = true;
-                       
+
 
 
                     }
                     $(".dvCheckinDateTime").find(".bx-calendar").css("display", "none");
                     $scope.RemoteEmployeeModel.VehicalNumber = response.data[0].VehicalNumber;
-                    $scope.RemoteEmployeeModel.Comments = response.data[0].Comments;
+                    $scope.RemoteEmployeeModel.GuestAccessCardIssue = response.data[0].GuestAccessCardIssue;
+                    $scope.RemoteEmployeeModel.DeafultGuestCardNumber = response.data[0].DeafultGuestCardNumber;
+                    $scope.RemoteEmployeeModel.AccessCardCollectionStatus = response.data[0].AccessCardCollectionStatus;
+                    $scope.RemoteEmployeeModel.GuestAccessCardIssue = response.data[0].GuestAccessCardIssue;
+                    
                     $("#Hcode_value").prop("disabled", true);
                 }, function () {
                     console.log("Error Occurs");
@@ -2494,9 +2519,9 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $scope.RemoteEmployeeModel.Comments = $("#Comments").val();
         $scope.RemoteEmployeeModel.Status = $("#TxtStatus").val();
         $scope.RemoteEmployeeModel.BookForWeekend = $("#BookForWeekend").is(':checked');
-        
-        
-      
+
+
+
 
         var response = myService.SaveRemoteEmployee($scope.RemoteEmployeeModel); // get call from service.js
         response.then(function (d) {
@@ -2551,7 +2576,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                         $scope.RemoteEmployeeModel.Name = response.data[0].Name;
                         $scope.RemoteEmployeeModel.EmailID = response.data[0].EmailID;
 
-                       
+
 
                         $scope.RemoteEmployeeModel.CheckinDateTime = null;
                         $scope.RemoteEmployeeModel.CheckOutDateTime = null;
@@ -2559,7 +2584,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                         $scope.RemoteEmployeeModel.Comments = null;
                         $scope.RemoteEmployeeModel.IsVehicalParkedOnPremises = false;
                         $scope.RemoteEmployeeModel.Status = 'Open';
-                        
+
 
                     }, function () {
                         console.log("Error Occurs");
@@ -2575,7 +2600,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                 // $scope.AppointmentModel.VisitorName = selected.originalObject;
             }
 
-          
+
 
         }
         catch (err) {
@@ -2593,7 +2618,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         else
             return false;
     }
-    $scope.ViewSecurityCheck = function (Pkey) {
+    $scope.ViewSecurityCheck = function (Pkey, RequestFor) {
         $scope.RemoteEmployeeSecurityCheck = {};
         $scope.DisableSecuirtyCheck = true;
         $scope.DisableSecuirtyCheckMainCOntrols = true;
@@ -2601,6 +2626,8 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $("#DvRENumber").css("display", "");
         $scope.clearFormSecurityCheck();
         $(".dvCheckinDateTimeSc").find(".bx-calendar").css("display", "none");
+        $("#btnSaveSecurityCHeck").html("Save");
+        $scope.RequestFor = RequestFor;
         try {
 
 
@@ -2623,7 +2650,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeSecurityCheck.CheckOutDateTime = response.data[0].CheckOutDateTime;
                     $("#CheckOutDateTimeSc").val(response.data[0].CheckOutDateTime);
                     $("#CheckinDateTimeSc").val(response.data[0].CheckinDateTime);
-               
+
 
 
                     $scope.RemoteEmployeeSecurityCheck.IsVehicalParkedOnPremises = response.data[0].IsVehicalParkedOnPremises;
@@ -2632,18 +2659,17 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     if (response.data[0].GuestAccessCardIssue == "Yes") {
                         $("#dvAccessCardCollected").css("display", "");
                         $("#DvDefaultAccessCardNumber").css("display", "");
-                
+
 
                     }
                     else {
-                        
+
                         $("#dvAccessCardCollected").css("display", "none");
                         $("#DvDefaultAccessCardNumber").css("display", "none");
                     }
-                    
+
                     $scope.DisableSecuirtyCheckMainCOntrols = false;
-                    if (response.data[0].Status == "Checked Out") {
-                        $scope.DisableSecuirtyCheckMainCOntrols = true;
+                    if (response.data[0].Status == "Checked Out") {                      
                         $(".dvCheckOutDateTimeSc").find(".bx-calendar").css("display", "none");
                     }
                     else {
@@ -2662,12 +2688,12 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeSecurityCheck.Escalation = response.data[0].Escalation;
                     $scope.RemoteEmployeeSecurityCheck.DeafultGuestCardNumber = response.data[0].DeafultGuestCardNumber;
                     if (response.data[0].IsVehicalParkedOnPremises == "True" || response.data[0].IsVehicalParkedOnPremises == "true") {
-                        $("#IsVehicalParkedOnPremisesSc").prop("checked", true);
-                        $("#DvVichalNumbersc").css("display", "");
+                        $("#IsVehicalParkedOnPremises").prop("checked", true);
+                        $("#DvVichalNumber").css("display", "");
                     }
                     else {
-                        $("#IsVehicalParkedOnPremisesSc").prop("checked", false);
-                        $("#DvVichalNumbersc").css("display", "none");
+                        $("#IsVehicalParkedOnPremises").prop("checked", false);
+                        $("#DvVichalNumber").css("display", "none");
                     }
                     $scope.RemoteEmployeeSecurityCheck.VehicalNumber = response.data[0].VehicalNumber;
                     $scope.RemoteEmployeeSecurityCheck.Comments = response.data[0].Comments;
@@ -2676,7 +2702,21 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $("#ddlGuestAccessCardIssue").val(GuestAccessCardIssuevalue).trigger('change');
                     $("#ddlAccessCardCollected").val(AccessCardCollectionStatusValue).trigger('change');
 
+                    $scope.DisableSecuirtyCheckMainCOntrols = true;
+                    if (RequestFor == "Check In") {
+                        $scope.DisableSecuirtyCheckMainCOntrols = false;
+                        $("#btnSaveSecurityCHeck").html("Check In");
+                        $("#SecurityCheckModelLabel").html("Check In");
+                        $scope.RemoteEmployeeSecurityCheck.Status = "Check In";
+                        $("#TxtStatusSc").val("Check In");
 
+                    }
+                    else if (RequestFor == "Checked Out") {
+                        $scope.DisableSecuirtyCheckMainCOntrols = false;
+                        $("#TxtStatusSc").val("Checked Out");
+                        $("#btnSaveSecurityCHeck").html("Checked Out");
+                        $("#SecurityCheckModelLabel").html("Checked Out");
+                    }
                 }, function () {
                     console.log("Error Occurs");
                 });
@@ -2697,29 +2737,22 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
 
 
     $scope.SaveSecurityCheck = function () {
-        
+
         $scope.RemoteEmployeeSecurityCheck.Pkey = $('#HcodeSecurityCheckModel_Pkey').val();
         $scope.RemoteEmployeeSecurityCheck.GuestAccessCardIssue = $('#ddlGuestAccessCardIssue').val();
-        $scope.RemoteEmployeeSecurityCheck.CheckOutDateTime = $("#CheckOutDateTimeSc").val();
-        $scope.RemoteEmployeeSecurityCheck.CheckinDateTime = $("#CheckinDateTimeSc").val();
-        
-
         if ($('#ddlGuestAccessCardIssue').val() == "Yes") {
             $scope.RemoteEmployeeSecurityCheck.AccessCardCollectionStatus = $("#ddlAccessCardCollected").val();
             $scope.RemoteEmployeeSecurityCheck.DeafultGuestCardNumber = $("#DeafultGuestCardNumber").val();
-            $scope.RemoteEmployeeSecurityCheck.Status = "Check In";
         }
-        else if ($('#ddlGuestAccessCardIssue').val() == "No") {
-            $scope.RemoteEmployeeSecurityCheck.Status = "Checked Out";
-        }
-        if ($("#ddlAccessCardCollected").val() == "No") {
+        $scope.RemoteEmployeeSecurityCheck.Status = $("#TxtStatusSc").val();
+
+        if ($('#ddlAccessCardCollected').val() == "No") {
             $scope.RemoteEmployeeSecurityCheck.Escalation = $("#Escalation").val();
-            $scope.RemoteEmployeeSecurityCheck.Status = "Checked Out";
         }
-        if ($('#ddlAccessCardCollected').val() == "No" || $('#ddlAccessCardCollected').val() == "Yes") {
-            $scope.RemoteEmployeeSecurityCheck.Status = "Checked Out";
-        }
-    
+        $scope.RemoteEmployeeSecurityCheck.IsVehicalParkedOnPremises = $('#IsVehicalParkedOnPremises').is(':checked');
+        $scope.RemoteEmployeeSecurityCheck.VehicalNumber = $('#VehicalNumber').val();
+     
+
 
         var response = myService.SaveSecurityCheck($scope.RemoteEmployeeSecurityCheck); // get call from service.js
         response.then(function (d) {
