@@ -76,8 +76,8 @@ namespace VisitorsManagement.Repository
 	                                SET STATUS = 'Expired',
 	                                UpdatedDate=GETDATE()
 	                                WHERE DATE < CONVERT(VARCHAR(10), GETDATE(), 120)
-		                            AND STATUS = 'Open'
-		                            OR  STATUS='Checked In'";
+		                            AND (STATUS = 'Open'
+		                            OR  STATUS='Checked In')";
                     await _genericRepository.GetAsync<string>(ExpiredVM, null);
 
 
@@ -85,8 +85,8 @@ namespace VisitorsManagement.Repository
 	                                SET STATUS = 'Expired',
 	                                UpdatedDate=GETDATE()
 	                                WHERE CONVERT(VARCHAR(10),CheckOutDateTime, 120) < CONVERT(VARCHAR(10), GETDATE(), 120)
-		                            AND STATUS = 'Open'
-		                            OR  STATUS='Check In'";
+		                            AND (STATUS = 'Open'
+		                            OR  STATUS='Check In')";
                     await _genericRepository.GetAsync<string>(ExpiredRE, null);
 
                     return currentUserDto;

@@ -1,24 +1,24 @@
-﻿<table style="width:350px;">
+﻿<table style="width:300px;">
     <tr>
         <td>
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="background-color: #fff;padding: 1em 1.75em; padding-bottom: 0; ">
                 <!--Intro-->
 
                 <tr>
-                    <td style="margin:0;font-size: 13px;"><strong style="color:#131313;font-size: 13px;">Hello {{VisitingPersonName}}, <br /></strong></td>
+                    <td style="margin:0;font-size: 13px;"><strong style="color:#131313;font-size: 13px;">Hello Team, <br /></strong></td>
                 </tr>
                 <tr><td style="height:15px;">&nbsp;</td></tr>
                 <tr>
-                    <td style="margin:0;color:#131313;">
-                        Your appointment has been scheduled.
+                    <td style="margin:0;color:#131313;font-size: 13px;">
+                        {{BodyHeader}}
                     </td>
                 </tr>
                 <tr><td style="height:5px;">&nbsp;</td></tr>
-                <tr>
+                <!--<tr>
                     <td>
                         Please show your "Visitor Gate Pass" at security check point of Husqvarna (India) Products Private Limited, Nashik.
                     </td>
-                </tr>
+                </tr>-->
                 <tr>
                     <td>
                         <br />
@@ -32,73 +32,75 @@
                             </div>
                             <div style="vertical-align: middle; text-align: center;margin-top:10px; width:100%">
                                 <div style="text-align:center; width:80%; background-color:yellow;border:solid 1px #002454;border-radius:6px;margin-right: 10%;margin-left: 10%;">
-                                    <h2 style="color:#002454;margin:5px; align-self:center;width:100%;text-align:center;">Visitor Gate Pass</h2>
+                                    <h2 style="color:#002454;margin:5px; align-self:center;width:100%;text-align:center;">Remote Employee Card Not Collected</h2>
                                 </div>
                             </div>
                             <div style="margin-top:10px;">
                                 <table style="width:100%; margin-left:10px;">
                                     <tr style="height:30px;">
                                         <td style="width:50px;">
-                                            Appointment Date:
+                                            RE Number:
                                         </td>
                                         <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{DateDetail}}</span>
+                                            <span style="color:#1a1aff">{{Re_Number}}</span>
                                         </td>
                                     </tr>
                                     <tr style="height:30px;">
                                         <td style="width:50px;">
-                                            Appointment No:
+                                            H Code:
                                         </td>
                                         <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{AppointmentNo}}</span>
+                                            <span style="color:#1a1aff">{{Hcode}}</span>
                                         </td>
                                     </tr>
                                     <tr style="height:30px;">
                                         <td style="width:50px;">
-                                            Visitor Name:
+                                            Name:
                                         </td>
                                         <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{VisitorsName}}</span>
+                                            <span style="color:#1a1aff">{{Name}}</span>
                                         </td>
                                     </tr>
                                     <tr style="height:30px;">
                                         <td style="width:50px;">
-                                            Visit to:
+                                            EmailID:
                                         </td>
                                         <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{VisitTo}}</span>
+                                            <span style="color:#1a1aff">{{EmailID}}</span>
                                         </td>
                                     </tr>
                                     <tr style="height:30px;">
                                         <td style="width:50px;">
-                                            Purpose to Visit:
+                                            Check In Date Time:
                                         </td>
                                         <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{PurposeOfVisit}}</span>
+                                            <span style="color:#1a1aff">{{CheckinDateTime}}</span>
                                         </td>
                                     </tr>
                                     <tr style="height:30px;">
                                         <td style="width:50px;">
-                                            Company Name:
+                                            Check Out Date Time:
                                         </td>
                                         <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{CompanyName}}</span>
+                                            <span style="color:#1a1aff">{{CheckOutDateTime}}</span>
                                         </td>
                                     </tr>
                                     <tr style="height:30px;">
                                         <td style="width:50px;">
-                                            Remark:
+                                            Status:
                                         </td>
                                         <td style="width:50px;">
-                                            <span style="color:#1a1aff">{{RemarkDetail}}</span>
+                                            <span style="color:#1a1aff">{{Status}}</span>
                                         </td>
                                     </tr>
-                                   
-                                    <tr>
-                                        <td colspan="2" style="margin-top:5px; text-align:center;">
-                                            <img height="200" src="cid:QRCode">
+                                    <tr style="height:30px;">
+                                        <td style="width:50px;">
+                                            Escalation:
                                         </td>
-                                    </tr>
+                                        <td style="width:50px;">
+                                            <span style="color:#1a1aff">{{Escalation}}</span>
+                                        </td>
+                                    </tr>                                    
                                 </table>
                                 <span></span>
                             </div>
@@ -135,6 +137,4 @@
                     <td class="" style="">&nbsp;</td>
                 </tr>
             </table>
-        </td>
-    </tr>
 </table>
