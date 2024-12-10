@@ -377,6 +377,19 @@
 
         return response;
     }
+    this.CancelRemoteEmployee = function (Pkey) {
+        var response = $http({
+            method: 'post',
+            url: baseURL + "RemoteEmployee/CancelRemoteEmployee",
+            data: { Pkey: Pkey },
+            dataType: "json"
+        });
+
+        return response;
+    }
+
+
+    
 
     //----------End Remote employee-------------
 

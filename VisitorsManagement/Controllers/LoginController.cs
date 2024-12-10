@@ -54,7 +54,7 @@ namespace VisitorsManagement.Controllers
             //if (ModelState.IsValid)
             //{
             // _wpRepository.Wpreminder();
-             var Test= DB.Decrypt("bGQ5xCX4ni2XTXU5TybRIYrBX2V8j7ympH5tdHDW8+k=");
+             var Test= DB.Decrypt("gNAHzT+TFTsmGIhiAJObovvwvzQI23cE23+GDkTE2q8=");
            
             CurrentUserDto currentUserDtoDisable = await _authRepository.LoginUserActive(user);
             if(currentUserDtoDisable!=null)

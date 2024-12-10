@@ -2302,7 +2302,8 @@ app.controller("CtrlReports", function ($scope, $http, myService, $timeout, Uplo
 app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeout, Upload, NgTableParams, $window, constants, toaster) {
     $scope.showTable = true;
     $scope.RequestFor = "";
-
+    $scope.DisableSecuirtyCheckMainCOntrolsChecKOut = false;
+    
     $scope.RemoteEmployeeModel = {};
     $scope.HcodeAutoCompleteData = [];
     $scope.DisableCOntrolOnEdit = false;
@@ -2435,7 +2436,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
 
     }
     $scope.EditRemoteEmployee = function (Pkey, RequestFor) {
-        
+       
         $scope.RequestFor = RequestFor;
         $scope.DisableCOntrolOnEdit = true;
         $scope.DisableCOntrolOnEditAdmin = false;
@@ -2464,16 +2465,21 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeModel.Status = response.data[0].Status;
 
                     if ($scope.RemoteEmployeeModel.Status == "Open") {
-                        $scope.RequestFor = "Edit";
+                        //$scope.RequestFor = "Edit";
                     }
                     else if ($scope.RemoteEmployeeModel.Status == "Expired") {
                         $scope.DisableCOntrolOnEditAdmin = true;
                     }
 
-                    if ($scope.RemoteEmployeeModel.Status == "Checked Out" || $scope.RemoteEmployeeModel.Status == "Expired") {
+                    if ($scope.RemoteEmployeeModel.Status == "Checked Out" || $scope.RemoteEmployeeModel.Status == "Expired" || $scope.RemoteEmployeeModel.Status=="Check In") {
                         $scope.RequestFor = "View";
+                        $scope.DisableCOntrolOnEditAdmin = true;
                     }
-                
+                  
+                    if ($scope.RequestFor == "View" || RequestFor == "View") {
+                        $scope.RequestFor = "View";
+                        $scope.DisableCOntrolOnEditAdmin = true;
+                    }
                  
 
                     $("#CheckOutDateTime").val(response.data[0].CheckOutDateTime);
@@ -2634,10 +2640,24 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         else
             return false;
     }
+    $scope.CancelRE = function (Pkey) {
+        $("#hideenRemoteEmployeeId").val(Pkey);
+
+    };
+
+
+    
+ 
+    $scope.CancelRemoteEmployee = function () {
+        var response = myService.CancelRemoteEmployee($("#hideenRemoteEmployeeId").val());    
+        $scope.getAllRemoteEmployee();
+        $("#btnCloseREPopup").click();
+    }
     $scope.ViewSecurityCheck = function (Pkey, RequestFor) {
         $scope.RemoteEmployeeSecurityCheck = {};
         $scope.DisableSecuirtyCheck = true;
         $scope.DisableSecuirtyCheckMainCOntrols = true;
+        $scope.DisableSecuirtyCheckMainCOntrolsChecKOut = true;
         $("#Hcode_value").prop("disabled", true);
         $("#DvRENumber").css("display", "");
         $scope.clearFormSecurityCheck();
@@ -2719,7 +2739,9 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $("#ddlAccessCardCollected").val(AccessCardCollectionStatusValue).trigger('change');
 
                     $scope.DisableSecuirtyCheckMainCOntrols = true;
+                    $scope.DisableSecuirtyCheckMainCOntrolsChecKOut = true;
                     if (RequestFor == "Check In") {
+
                         $scope.DisableSecuirtyCheckMainCOntrols = false;
                         $("#btnSaveSecurityCHeck").html("Check In");
                         $("#SecurityCheckModelLabel").html("Check In");
@@ -2728,11 +2750,14 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
 
                     }
                     else if (RequestFor == "Checked Out") {
-                        $scope.DisableSecuirtyCheckMainCOntrols = false;
+                        $scope.DisableSecuirtyCheckMainCOntrols = true;
+                        $scope.DisableSecuirtyCheckMainCOntrolsChecKOut = false;
+                        
                         $("#TxtStatusSc").val("Checked Out");
                         $("#btnSaveSecurityCHeck").html("Checked Out");
                         $("#SecurityCheckModelLabel").html("Checked Out");
                     }
+                    
                 }, function () {
                     console.log("Error Occurs");
                 });

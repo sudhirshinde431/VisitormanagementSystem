@@ -17,5 +17,12 @@ namespace VisitorsManagement.Repository
 
 
         Task<int> SaveSecurityCheck(RemoteEmployeeSecurityCheck RemoteEmployeeSecurityCheck);
+
+        Task<int> GetTodayVMCount();
+        Task<int> GetTodayWPCount();
+        Task<int> GetTodayRECount();
+
+        Task<int> CancelRemoteEmployee(RemoteEmployee Re);
+        
     }
 }

@@ -179,5 +179,28 @@ namespace VisitorsManagement.Controllers
             }
             return Json(clsResponse);
         }
+
+
+        [HttpPost]
+        public async Task<ActionResult> CancelRemoteEmployee(string Pkey)
+        {
+            try
+            {
+                RemoteEmployee RE = new RemoteEmployee();
+                RE.CreatedBy = Convert.ToInt32(Session["UserID"]);
+                RE.CreatedDate = DateTime.UtcNow.Date.ToString("dd-MMM-yyyy");
+                RE.UpdatedBy = Convert.ToInt32(Session["UserID"]);
+                RE.UpdatedDate = DateTime.UtcNow.Date.ToString("dd-MMM-yyyy");
+                RE.Status = "Cancelled";
+                RE.Pkey= Pkey;
+                var result = await _IRemoteEmployee.CancelRemoteEmployee(RE);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                DB.insertErrorlog("WP", "getAllWorkPermit", ex.Message, Convert.ToInt16(Session["UserID"]));
+                return Content("Failed : Error Occured");
+            }
+        }
     }
 }

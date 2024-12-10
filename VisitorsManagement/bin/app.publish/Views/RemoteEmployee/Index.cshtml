@@ -184,12 +184,15 @@
                                 <td class="s5" data-title="'Status'"
                                     sortable="'Status'" ng-bind="details.Status" ng-attr-title="{{details.Status}}"></td>
 
-                                <td ng-if="IsAccessable('UpdateRE')" data-title="'View'" class="s5">
-                                    <a ng-if="details.Status == 'Open'" class="editButton" ng-click="EditRemoteEmployee(details.Pkey,'Edit')" title="View/Edit"> <i style="font-size: 17px;" class="bx bx-edit-alt"></i></a>
-                                    <a class="btn btn-link" ng-if="details.Status != 'Open'" ng-click="EditRemoteEmployee(details.Pkey,'View')" title="View/Edit"> View</a>
-                                </td>
-                                <td class="s15" ng-if="IsAccessable('UpdateSC')" data-title="'Security Check'">
-                                    <a  href="" class="btn btn-link" ng-click="ViewSecurityCheck(details.Pkey,'View')" title="View/Edit"> View </a>
+
+                                <td class="s15" ng-if="IsAccessable('UpdateRE')" data-title="'View / Edit'">
+                                    <a ng-if="!isSecurityRole && details.Status == 'Open' && IsAccessable('UpdateRE')" class="editButton" ng-click="EditRemoteEmployee(details.Pkey,'Edit')" title="View/Edit"> <i style="font-size: 17px;" class="bx bx-edit-alt"></i></a>
+                                    <a ng-if="details.Status == 'Open' && !isSecurityRole"
+                                       data-toggle="modal" data-target="#exampleModalCancelRE"
+                                       title="Cancel Remote Employee Request" class="editButton" ng-click="CancelRE(details.Pkey)"><i style="font-size: 17px;" class='bx bx-user-x'></i></a>
+
+                                    <a class="btn btn-link" ng-if="IsAccessable('ReadRE')" ng-click="EditRemoteEmployee(details.Pkey,'View')" title="View/Edit"> View</a>
+
                                     <button ng-if="isSecurityRole && details.IsCheckInToday && details.Status == 'Open'"
                                             ng-click="ViewSecurityCheck(details.Pkey,'Check In')"
                                             type="button" class="btn btn-success ml-1 gridButtons">
@@ -207,6 +210,29 @@
                 </div>
             </div>
         </div>
+
+
+        <div  class="modal fade" id="exampleModalCancelRE" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="width:500px !important;left:33% !important">
+            <div class="modal-dialog " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="hideenRemoteEmployeeId" >
+                        Are you sure you want to cancel the remote employee request
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"  id="btnCloseREPopup"  class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button"  ng-click="CancelRemoteEmployee()" class="btn btn-primary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog" role="document">
                 <div class="modal-content" style="min-width:75%;">
@@ -431,7 +457,7 @@
 
                                     </div>
 
-                                    <div class="row" ng-if="RequestFor=='View' || RequestFor=='Check In'">
+                                    <div class="row" ng-if="RequestFor=='View' || RequestFor=='Check In' || RequestFor=='Checked Out'">
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label>Is Vehical Parked On Premises</label>
@@ -440,7 +466,7 @@
                                                        value="true" id="IsVehicalParkedOnPremises" onclick="IsVehicalParkedOnPremisesClick()" />
                                             </div>
                                         </div>
-                                        <div class="col-4" style="display:none" id="DvVichalNumber" ng-if="RequestFor=='View' || RequestFor=='Check In'">
+                                        <div class="col-4" style="display:none" id="DvVichalNumber" ng-if="RequestFor=='View' || RequestFor=='Check In' || RequestFor=='Checked Out'">
                                             <div class="form-group">
                                                 <label>Vehical Number</label>
                                                 <input type="text" ng-disabled="DisableSecuirtyCheckMainCOntrols" id="VehicalNumber" ng-model="RemoteEmployeeSecurityCheck.VehicalNumber" maxlength="80" class="form-control" placeholder="Vehical Number" />
@@ -468,7 +494,7 @@
                                         <div class="col-4" id="dvAccessCardCollected" style="display:none" ng-if="RequestFor=='View' || RequestFor=='Checked Out' || RequestFor=='Check In'">
                                             <div class="form-group">
                                                 <label>Guest Access Card Collected</label>
-                                                <select ng-disabled="DisableSecuirtyCheckMainCOntrols" class="form-control  show-tick" onchange="SelectedIsAccessCardCollected()" title="Is Card Collected" data-live-search="false" id="ddlAccessCardCollected"
+                                                <select ng-disabled="DisableSecuirtyCheckMainCOntrolsChecKOut" class="form-control  show-tick" onchange="SelectedIsAccessCardCollected()" title="Is Card Collected" data-live-search="false" id="ddlAccessCardCollected"
                                                         data-size="8" required>
                                                     <option ng-repeat="purpose in AccessCardCollectedList" value='{{ purpose.text }}'>{{ purpose.text }}</option>
                                                 </select>
@@ -480,7 +506,7 @@
                                         <div class="col-8">
                                             <div class="form-group">
                                                 <label>Escalation</label>
-                                                <textarea ng-disabled="DisableSecuirtyCheckMainCOntrols" rows="5" id="Escalation" ng-model="RemoteEmployeeSecurityCheck.Escalation" style="min-width:100%;" maxlength="200" class="form-control" placeholder="Enter Escalation.."></textarea>
+                                                <textarea ng-disabled="DisableSecuirtyCheckMainCOntrolsChecKOut" rows="5" id="Escalation" ng-model="RemoteEmployeeSecurityCheck.Escalation" style="min-width:100%;" maxlength="200" class="form-control" placeholder="Enter Escalation.."></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -604,12 +630,12 @@
         function SelectedddlGuestAccessCardIssue() {
 
             if ($("#ddlGuestAccessCardIssue").val() == "Yes") {
-                $("#dvAccessCardCollected").css("display", "");
+               // $("#dvAccessCardCollected").css("display", "");
                 $("#DvDefaultAccessCardNumber").css("display", "");
 
             }
             else {
-                $("#dvAccessCardCollected").css("display", "none");
+               // $("#dvAccessCardCollected").css("display", "none");
                 $("#DvDefaultAccessCardNumber").css("display", "none");
                 $("#DvEscalation").css("display", "none");
             }

@@ -149,7 +149,7 @@
                                         </div>*@
                                          
                                     </div>
-                                    <div class="row" ng-if="!isSecurityRole">
+                                    <div class="row" ng-if="isSecurityRole">
                                         <div class="col-4">
                                             <div class="form-group" style="display:flex">
 
@@ -266,8 +266,8 @@
                         <a style="float:right" class="btn" title="Export Table" ng-click="csv.generate()" ng-href="{{ csv.link() }}" download="VisitorsList.csv">
                             <i class="glyphicon glyphicon-new-window"></i>&nbsp;Export
                         </a>
-                        <table id="tableParams" show-filter="false" style="height:100%;" class="table table-bordered bordered table-condensed datatable" 
-                               ng-table="tableParams" export-csv="csv" separator="," export-csv-ignore="noExl"> 
+                        <table id="tableParams" show-filter="false" style="height:100%;" class="table table-bordered bordered table-condensed datatable"
+                               ng-table="tableParams" export-csv="csv" separator="," export-csv-ignore="noExl">
                             <colgroup>
                                 <col class="s10" />
                                 <col class="s20" />
@@ -312,14 +312,16 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups | filter:VM_getAllAppointment "> {{$groups}}
+                            @*| filter:VM_getAllAppointment*@
+                            <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups">
+                                {{$groups}}
                                 <td colspan="8">
                                     <a href="" ng-click="switchGroup(group, $parent.$groups)">
                                         <span class="glyphicon" ng-class="{ 'fas fa-chevron-right': group.$hideRows, 'fas fa-chevron-down': !group.$hideRows }"></span>
                                         <strong>{{ group.value | date:'dd-MMM-yyyy'  }}  </strong>
                                     </a>
                                 </td>
-                            
+
                             </tr>
                             <tr ng-hide="group.$hideRows" ng-repeat="details in group.data | filter:searchFilter" ng-repeat-end>
                                 <td ng-attr-title="{{details.AppointmentNo}}">{{details.AppointmentNo}}</td>
@@ -342,24 +344,24 @@
                                 </td>
                             </tr>
                             @*<tr ng-repeat="details in $data| filter:searchFilter">
-                                <td class="s10" data-title="'Appointment No.'" sortable="'AppointmentNo'" ng-bind="details.AppointmentNo" ng-attr-title="{{details.AppointmentNo}}"></td>
-                                <td class="s20" data-title="'Visitors Name'" sortable="'VisitorName'" ng-bind="details.VisitorName" ng-attr-title="{{details.VisitorName}}"></td>
-                                <td class="s10" data-title="'Schedule Date'" sortable="'StrDate'" ng-bind="details.strDate" ng-attr-title="{{details.strDate}}"></td>
-                                <td ng-if="isSecurityRole" class="s10" data-title="'Person to Visit'" sortable="'PersonToVisitName'" ng-bind="details.PersonToVisitName" ng-attr-title="{{details.PersonToVisitName}}"></td>
-                                <td class="s5" data-title="'InTime'" sortable="'InTime'" ng-bind="details.InTime" ng-attr-title="{{details.InTime}}"></td>
-                                <td class="s5" data-title="'Out Time'" sortable="'OutTime'" ng-bind="details.OutTime" ng-attr-title="{{details.OutTime}}"></td>
-                                <td class="s10" data-title="'Status'" sortable="'Status'" ng-bind="details.Status" ng-attr-title="{{details.Status}}"></td>
+            <td class="s10" data-title="'Appointment No.'" sortable="'AppointmentNo'" ng-bind="details.AppointmentNo" ng-attr-title="{{details.AppointmentNo}}"></td>
+            <td class="s20" data-title="'Visitors Name'" sortable="'VisitorName'" ng-bind="details.VisitorName" ng-attr-title="{{details.VisitorName}}"></td>
+            <td class="s10" data-title="'Schedule Date'" sortable="'StrDate'" ng-bind="details.strDate" ng-attr-title="{{details.strDate}}"></td>
+            <td ng-if="isSecurityRole" class="s10" data-title="'Person to Visit'" sortable="'PersonToVisitName'" ng-bind="details.PersonToVisitName" ng-attr-title="{{details.PersonToVisitName}}"></td>
+            <td class="s5" data-title="'InTime'" sortable="'InTime'" ng-bind="details.InTime" ng-attr-title="{{details.InTime}}"></td>
+            <td class="s5" data-title="'Out Time'" sortable="'OutTime'" ng-bind="details.OutTime" ng-attr-title="{{details.OutTime}}"></td>
+            <td class="s10" data-title="'Status'" sortable="'Status'" ng-bind="details.Status" ng-attr-title="{{details.Status}}"></td>
 
-                                <td data-title="'View'" class="s10">
-                                    <a title="View / Edit"  class="editButton" ng-click="EditDetails(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-edit-alt'></i></a>
-                                    <a ng-if="details.Status == StatusMedia.Waitingforapproval && !isSecurityRole" title="Approve Appointment" class="editButton" ng-click="approveAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-check'></i></a>
-                                    <a ng-if="details.Status == StatusMedia.Waitingforapproval && !isSecurityRole" title="Reject Appointment" class="editButton" ng-click="rejectAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-x'></i></a>
-                                    <a ng-if="details.Status == StatusMedia.Open && !isSecurityRole" title="Cancel Appointment" class="editButton" ng-click="CancelAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-user-x'></i></a>
-                                    <button ng-if="isSecurityRole && details.IsCheckInToday && details.Status == StatusMedia.Open" type="button" ng-click="CheckInAppointment(details.AppointmentID,details.VisitorName,details.NumberOfPerson)" class="btn btn-success ml-1 gridButtons">Check In</button>
-                                    <button ng-if="isSecurityRole && details.Status == StatusMedia.CheckIn" type="button" ng-click="CheckOut(details.AppointmentID,details.VisitorName)" class="btn btn-danger ml-1 gridButtons">Check Out</button>
-                                    <a href="" ng-if="isSecurityRole && details.Status == StatusMedia.CheckIn" class="btn btn-link" ng-click="downloadReport(details.AppointmentID)" title="View"> Print </a>
-                                </td>
-                            </tr>*@
+            <td data-title="'View'" class="s10">
+                <a title="View / Edit"  class="editButton" ng-click="EditDetails(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-edit-alt'></i></a>
+                <a ng-if="details.Status == StatusMedia.Waitingforapproval && !isSecurityRole" title="Approve Appointment" class="editButton" ng-click="approveAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-check'></i></a>
+                <a ng-if="details.Status == StatusMedia.Waitingforapproval && !isSecurityRole" title="Reject Appointment" class="editButton" ng-click="rejectAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-x'></i></a>
+                <a ng-if="details.Status == StatusMedia.Open && !isSecurityRole" title="Cancel Appointment" class="editButton" ng-click="CancelAppointment(details.AppointmentID)"><i style="font-size: 17px;" class='bx bx-user-x'></i></a>
+                <button ng-if="isSecurityRole && details.IsCheckInToday && details.Status == StatusMedia.Open" type="button" ng-click="CheckInAppointment(details.AppointmentID,details.VisitorName,details.NumberOfPerson)" class="btn btn-success ml-1 gridButtons">Check In</button>
+                <button ng-if="isSecurityRole && details.Status == StatusMedia.CheckIn" type="button" ng-click="CheckOut(details.AppointmentID,details.VisitorName)" class="btn btn-danger ml-1 gridButtons">Check Out</button>
+                <a href="" ng-if="isSecurityRole && details.Status == StatusMedia.CheckIn" class="btn btn-link" ng-click="downloadReport(details.AppointmentID)" title="View"> Print </a>
+            </td>
+        </tr>*@
                         </table>
                     </div>
                     

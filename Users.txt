@@ -42,3 +42,36 @@ ng-disabled="DisableCOntrolOnEditAdmin"
 DIrect Approval- Emaill - 
 
                 <tr class="ng-table-group" style="background: #F5F5F6; cursor:pointer !important" ng-repeat-start="group in $groups @*| filter:VM_getAllAppointment*@ "> {{$groups}}
+
+
+12 /9 
+
+Direct approval shouls be visible for Secuorty
+Make one icon as remote employe
+Hide the accesss collect while check in 
+Super Admin checkout
+
+ ng-if="IsAccessable('UpdateRE')"
+
+DisableSecuirtyCheckMainCOntrolsChecKOut
+
+
+ Task<int> GetTodayVMCount();
+ Task<int> GetTodayWPCount();
+ Task<int> GetTodayRECount();
+
+
+sQuery = @"SELECT Hcode,Name,EmailID
+       FROM RemoteEmployee 
+       Where Hcode = @Hcode
+       GROUP BY Hcode,EmailID,Name
+       ";
+
+CancelRemoteEmployee
+
+
+ VM_ApproveRejectAppointment appointment = new VM_ApproveRejectAppointment();
+ appointment.UpdatedBy = 0;
+ appointment.UpdatedDate = DateTime.UtcNow;
+ appointment.AppointmentID = filter.AppointmentID;
+ appointment.Status = filter.Status;

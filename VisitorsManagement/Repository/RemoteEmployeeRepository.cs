@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
 using System.Windows.Input;
+using Visitors_Management.Dto.VM;
+using VisitorsManagement;
 using VisitorsManagement.Models;
 using VisitorsManagement.Models.Contractor;
 using VisitorsManagement.Models.RemoteEmployee;
@@ -101,7 +104,7 @@ END as SortOrder,
 
 
             }
-        
+
             if (!string.IsNullOrEmpty(filter.Pkey))
             {
                 sQuery = $@"SELECT
@@ -140,7 +143,7 @@ END as SortOrder,
                 sQuery = sQuery + " Where Hcode is not null GROUP BY Hcode,EmailID,Name";
 
             }
-            if(filter.FilterText== "ForAutotCompleteSelect" && string.IsNullOrEmpty(filter.Hcode))
+            if (filter.FilterText == "ForAutotCompleteSelect" && string.IsNullOrEmpty(filter.Hcode))
             {
                 return new List<RemoteEmployee>();
             }
@@ -167,17 +170,17 @@ END as SortOrder,
                            Where Hcode = @Hcode";
                 }
 
-               
+
                 DynamicParameters param = new DynamicParameters();
                 param.Add("Hcode", filter.Hcode);
                 var resultEmployee = await _genericRepository.GetAsync<RemoteEmployee>(sQuery, param);
 
-                if(resultEmployee!=null)
+                if (resultEmployee != null)
                 {
                     result.FirstOrDefault().remoteEmployee = resultEmployee.ToList();
                 }
 
-              
+
             }
 
             return result;
@@ -221,8 +224,8 @@ END as SortOrder,
                     DynamicParameters param = new DynamicParameters();
                     param.Add("@Hcode", remoteEmployee.Hcode);
                     param.Add("@Name", remoteEmployee.Name);
-                    param.Add("@EmailID", remoteEmployee.EmailID);                
-                    param.Add("@CheckOutDateTime",Convert.ToDateTime(remoteEmployee.CheckOutDateTime));
+                    param.Add("@EmailID", remoteEmployee.EmailID);
+                    param.Add("@CheckOutDateTime", Convert.ToDateTime(remoteEmployee.CheckOutDateTime));
                     param.Add("@IsVehicalParkedOnPremises", remoteEmployee.IsVehicalParkedOnPremises);
                     param.Add("@VehicalNumber", remoteEmployee.VehicalNumber);
                     param.Add("@Comments", remoteEmployee.Comments);
@@ -250,13 +253,13 @@ END as SortOrder,
                     {
                         numberOfDays = numberOfDays + 1;
                     }
-                  
+
                     for (int i = 0; i < numberOfDays; i++)
                     {
                         DateTime CheckinDateTime = Convert.ToDateTime(remoteEmployee.CheckinDateTime);
                         TimeSpan CheckIntime = CheckinDateTime.TimeOfDay;
                         DateTime CheckInDate = CheckinDateTime.Date;
-                        DateTime StartDateFInal= CheckInDate.Add(CheckIntime).AddDays(i);
+                        DateTime StartDateFInal = CheckInDate.Add(CheckIntime).AddDays(i);
 
 
                         TimeSpan time = Convert.ToDateTime(remoteEmployee.CheckOutDateTime).TimeOfDay;
@@ -266,12 +269,12 @@ END as SortOrder,
                         DateTime date = StartDateFInal;  // Use any DateTime here
                         bool isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
 
-                        if(remoteEmployee.BookForWeekend==null)
+                        if (remoteEmployee.BookForWeekend == null)
                         {
                             remoteEmployee.BookForWeekend = "false";
                         }
 
-                        if(Convert.ToBoolean(remoteEmployee.BookForWeekend)==false && isWeekend)
+                        if (Convert.ToBoolean(remoteEmployee.BookForWeekend) == false && isWeekend)
                         {
                             continue;  // Skip to the next iteration
                         }
@@ -337,7 +340,7 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
             {
                 DateTime currentDate = DB.getCurrentIndianDate();
 
-                if (remoteEmployee.Status=="Check In")
+                if (remoteEmployee.Status == "Check In")
                 {
                     sQuery = $@"UPDATE [dbo].[RemoteEmployee]
                            SET 
@@ -359,8 +362,8 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
                     param.Add("@AccessCardCollectionStatus", remoteEmployee.AccessCardCollectionStatus);
                     param.Add("@GuestAccessCardIssue", remoteEmployee.GuestAccessCardIssue);
                     param.Add("@Escalation", remoteEmployee.Escalation);
-                    param.Add("@DeafultGuestCardNumber", remoteEmployee.DeafultGuestCardNumber);                   
-                    param.Add("@UpdatedBySC", remoteEmployee.UpdatedBySC);                 
+                    param.Add("@DeafultGuestCardNumber", remoteEmployee.DeafultGuestCardNumber);
+                    param.Add("@UpdatedBySC", remoteEmployee.UpdatedBySC);
                     param.Add("@UpdatedDateSC", remoteEmployee.UpdatedDateSC);
                     param.Add("@Pkey", remoteEmployee.Pkey);
                     param.Add("@CheckinDateTime", currentDate);
@@ -399,7 +402,7 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
                     param.Add("@UpdatedDateSC", remoteEmployee.UpdatedDateSC);
                     param.Add("@Pkey", remoteEmployee.Pkey);
                     param.Add("@CheckOutDateTime", currentDate);
-                    param.Add("@Status", remoteEmployee.Status);                   
+                    param.Add("@Status", remoteEmployee.Status);
                     var result = await _genericRepository.ExecuteCommandAsync(sQuery, param);
                     ///var result = await _genericRepository.GetAsync<int>(sQuery, param);
 
@@ -407,7 +410,7 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
 
                 }
 
-                
+
 
 
             }
@@ -420,6 +423,121 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
 
 
         ///End Security Check
+
+
+
+        public async Task<int> GetTodayVMCount()
+        {
+            var sQuery = @"";
+            DateTime currentDate = DB.getCurrentIndianDate();
+            try
+            {
+                sQuery = @"SELECT COUNT(*)
+FROM tbl_VM_Appointment
+WHERE Date = CAST(GETDATE() AS DATE) AND Status In ('Open','Direct approval','Check In')
+       ";
+
+                DynamicParameters param = new DynamicParameters();
+
+                var Count = await _genericRepository.GetAsync<int>(sQuery, param);
+
+                var Result = Count.FirstOrDefault();
+                return Result;
+
+            }
+            catch (Exception ex)
+            {
+                DB.insertErrorlog("remoteEmployee", "SaveSecurityCheck", ex.Message, 1);
+                return 0;
+            }
+        }
+
+
+        public async Task<int> GetTodayWPCount()
+        {
+            var sQuery = @"";
+            DateTime currentDate = DB.getCurrentIndianDate();
+            try
+            {
+                sQuery = @"SELECT COUNT(*)
+FROM tbl_WorkPermit
+WHERE Date = CAST(GETDATE() AS DATE) AND Status In ('Open','Direct approval','Check In')
+       ";
+
+                DynamicParameters param = new DynamicParameters();
+
+                var Count = await _genericRepository.GetAsync<int>(sQuery, param);
+
+                var Result = Count.FirstOrDefault();
+                return Result;
+
+            }
+            catch (Exception ex)
+            {
+                DB.insertErrorlog("remoteEmployee", "SaveSecurityCheck", ex.Message, 1);
+                return 0;
+            }
+        }
+
+
+        public async Task<int> GetTodayRECount()
+        {
+            var sQuery = @"";
+            DateTime currentDate = DB.getCurrentIndianDate();
+            try
+            {
+                sQuery = @"SELECT COUNT(*)
+FROM RemoteEmployee
+WHERE CAST(CheckinDateTime AS DATE) = CAST(GETDATE() AS DATE) AND Status In ('Open','Direct approval','Check In')
+       ";
+
+                DynamicParameters param = new DynamicParameters();
+
+                var Count = await _genericRepository.GetAsync<int>(sQuery, param);
+
+                var Result = Count.FirstOrDefault();
+                return Result;
+
+            }
+            catch (Exception ex)
+            {
+                DB.insertErrorlog("remoteEmployee", "SaveSecurityCheck", ex.Message, 1);
+                return 0;
+            }
+        }
+
+
+        public async Task<int> CancelRemoteEmployee(RemoteEmployee Re)
+        {
+            var sQuery = @"";
+            try
+            {
+                sQuery = $@"UPDATE RemoteEmployee SET
+                            Status = @Status 
+                            ,[UpdatedBy] = @UpdatedBy
+                            ,[UpdatedDate] = @UpdatedDate
+                            WHERE Pkey = @Pkey";
+
+                //,[UpdatedBy] = @UpdatedBy
+                //              ,[UpdatedDate] = @UpdatedDate
+
+                DynamicParameters param = new DynamicParameters();
+                param.Add("@Status", Re.Status);
+                param.Add("@UpdatedBy", Re.UpdatedBy);
+                param.Add("@UpdatedDate", Re.UpdatedDate);
+                param.Add("@Pkey", Re.Pkey);
+
+                var result = await _genericRepository.ExecuteCommandAsync(sQuery, param);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+
+
 
     }
 }
