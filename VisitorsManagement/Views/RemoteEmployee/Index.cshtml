@@ -52,7 +52,7 @@
 
                         <table id="tableParams" show-filter="false" style="height:1px;" class="table table-bordered bordered table-condensed datatable"
                                ng-table="tableParams" export-csv="csv" separator="," export-csv-ignore="noExl">
-                            <colgroup>
+                            @*<colgroup>
                                 <col class="s10" />
                                 <col class="s10" />
                                 <col class="s20" />
@@ -66,7 +66,7 @@
                                 <col class="s10 " />
                                 <col class="s10 " />
                                 <col class="s10 " />
-                            </colgroup>
+                            </colgroup>*@
                             <thead>
                                 <tr>
                                     <th class="s10">
@@ -80,6 +80,9 @@
                                     </th>
                                     <th class="s15">
                                         Email ID
+                                    </th>
+                                    <th class="s15">
+                                        Concern Person
                                     </th>
                                     <th class="s10">
                                         Check In Date Time
@@ -102,12 +105,7 @@
                                     <th class="s10">
                                         Created Date
                                     </th>
-                                    <th class="s10">
-                                        Updated By
-                                    </th>
-                                    <th class="s10">
-                                        Updated Date
-                                    </th>
+
 
                                     <th class="s10">
                                         Guest Access Card Issued
@@ -124,12 +122,7 @@
                                     <th class="s10">
                                         Deafult Guest Card Number
                                     </th>
-                                    <th class="s10">
-                                        Security check Done By
-                                    </th>
-                                    <th class="s10">
-                                        Security check Done On
-                                    </th>
+
 
 
 
@@ -141,6 +134,7 @@
                                 <td ng-attr-title="{{details.Hcode}}">{{details.Hcode}}</td>
                                 <td ng-attr-title="{{details.Name}}">{{details.Name}}</td>
                                 <td ng-attr-title="{{details.EmailID}}">{{details.EmailID}}</td>
+                                <td ng-attr-title="{{details.ConcernPersonName}}">{{details.ConcernPersonName}}</td>
                                 <td ng-attr-title="{{details.CheckinDateTime}}">{{details.CheckinDateTime}}</td>
                                 <td ng-attr-title="{{details.CheckOutDateTime}}">{{details.CheckOutDateTime}}</td>
                                 <td ng-attr-title="{{details.VehicalNumber}}">{{details.VehicalNumber}}</td>
@@ -148,15 +142,13 @@
                                 <td ng-attr-title="{{details.Status}}">{{details.Status}}</td>
                                 <td ng-attr-title="{{details.CreatedByName}}">{{details.CreatedByName}}</td>
                                 <td ng-attr-title="{{details.CreatedDate}}">{{details.CreatedDate}}</td>
-                                <td ng-attr-title="{{details.UpdatedByName}}">{{details.UpdatedByName}}</td>
-                                <td ng-attr-title="{{details.UpdatedDate}}">{{details.UpdatedDate}}</td>
+
 
                                 <td ng-attr-title="{{details.GuestAccessCardIssue}}">{{details.GuestAccessCardIssue}}</td>
                                 <td ng-attr-title="{{details.AccessCardCollectionStatus}}">{{details.AccessCardCollectionStatus}}</td>
                                 <td ng-attr-title="{{details.Escalation}}">{{details.Escalation}}</td>
                                 <td ng-attr-title="{{details.DeafultGuestCardNumber}}">{{details.DeafultGuestCardNumber}}</td>
-                                <td ng-attr-title="{{details.SecurityCheckDoneBy}}">{{details.SecurityCheckDoneBy}}</td>
-                                <td ng-attr-title="{{details.SecurityCheckDoneOn}}">{{details.SecurityCheckDoneOn}}</td>
+
 
                             </tr>
                         </table>
@@ -181,6 +173,7 @@
 
                                 <td class="s10" data-title="'Checkin Date Time'" sortable="'CheckinDateTime'" ng-bind="details.CheckinDateTime" ng-attr-title="{{details.CheckinDateTime}}"></td>
                                 <td class="s10" data-title="'Checked Out Date Time'" sortable="'CheckOutDateTime'" ng-bind="details.CheckOutDateTime" ng-attr-title="{{details.CheckOutDateTime}}"></td>
+                                <td class="s10" data-title="'Concern Person'" sortable="'ConcernPersonName'" ng-bind="details.ConcernPersonName" ng-attr-title="{{details.ConcernPersonName}}"></td>
                                 <td class="s5" data-title="'Status'"
                                     sortable="'Status'" ng-bind="details.Status" ng-attr-title="{{details.Status}}"></td>
 
@@ -206,13 +199,17 @@
                                 </td>
                             </tr>
                         </table>
+                        <div style="text-align:center;display:none" id="noDataFound">
+                            No data found
+                        </div>
                     </div>
+                  
                 </div>
             </div>
         </div>
 
 
-        <div  class="modal fade" id="exampleModalCancelRE" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="width:500px !important;left:33% !important">
+        <div class="modal fade" id="exampleModalCancelRE" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="width:500px !important;left:33% !important">
             <div class="modal-dialog " role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -222,12 +219,12 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" id="hideenRemoteEmployeeId" >
+                        <input type="hidden" id="hideenRemoteEmployeeId">
                         Are you sure you want to cancel the remote employee request
                     </div>
                     <div class="modal-footer">
-                        <button type="button"  id="btnCloseREPopup"  class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button"  ng-click="CancelRemoteEmployee()" class="btn btn-primary">Cancel</button>
+                        <button type="button" id="btnCloseREPopup" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" ng-click="CancelRemoteEmployee()" class="btn btn-primary">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -322,7 +319,7 @@
                                                 <textarea rows="5" ng-disabled="DisableCOntrolOnEditAdmin" id="Comments" ng-model="RemoteEmployeeModel.Comments" style="min-width:100%;" maxlength="200" class="form-control" placeholder="Enter Comment.."></textarea>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-2">
                                             <div class="form-group">
 
                                                 <label>Status</label><br />
@@ -331,6 +328,22 @@
                                                 <input type="hidden" id="TxtStatus" ng-model="RemoteEmployeeModel.Status" value="Open" placeholder="Status" />
                                             </div>
                                         </div>
+                                        <div class="col-2">
+                                         
+                                            <div class="form-group" ng-if="!isSecurityRole">
+                                                <label>Concern Person</label><br />
+                                                <label><b>{{RemoteEmployeeModel.ConcernPersonName}}</b></label>
+                                            </div>
+                                            <div class="form-group" ng-if="isSecurityRole">
+                                                <label>Concern Person</label>
+                                                <select ng-disabled="DisableCOntrolOnEdit" class="form-control selectpicker  show-tick" title="Select Employee" data-live-search="true" id="ddlEmployee"
+                                                        data-size="8" required>
+                                                    <option ng-repeat="employee in employeeMasterRE" value='{{ employee.ValueInt }}'>{{ employee.Text }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
                                     </div>
                                     <div class="row" ng-if="RequestFor=='View'">
                                         <div class="col-4">
@@ -630,12 +643,12 @@
         function SelectedddlGuestAccessCardIssue() {
 
             if ($("#ddlGuestAccessCardIssue").val() == "Yes") {
-               // $("#dvAccessCardCollected").css("display", "");
+                // $("#dvAccessCardCollected").css("display", "");
                 $("#DvDefaultAccessCardNumber").css("display", "");
 
             }
             else {
-               // $("#dvAccessCardCollected").css("display", "none");
+                // $("#dvAccessCardCollected").css("display", "none");
                 $("#DvDefaultAccessCardNumber").css("display", "none");
                 $("#DvEscalation").css("display", "none");
             }

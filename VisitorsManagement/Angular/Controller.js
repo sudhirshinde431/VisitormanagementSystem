@@ -28,6 +28,7 @@ app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout,
 
 
     $scope.AddNewRecord = function () {
+        $('#dvNote').css('display', "");
         //$scope.showTable = false;
         $scope.AppointmentModel = {};
         $scope.AppointmentModel.UserFullName = localStorage.getItem("UserFullName");
@@ -338,8 +339,13 @@ app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout,
         response.then(function (response) {
             $scope.AppointmentModel = response.data[0];
             $scope.AppointmentModel.Date = $scope.AppointmentModel.strDate;
+            $("#divVisitorVisitorName_value").val($scope.AppointmentModel.VisitorName);
+            $("#divVisitorPhoneNumber_value").val($scope.AppointmentModel.VisitorPhoneNumber);
             //$('#ddlPrepared').selectpicker('val', $scope.AppointmentModel.PersonToVisitID).trigger("change");
             $('#exampleModal').modal('show');
+            $('#dvNote').css('display', "none");
+
+
 
             $('#ddlPurpose').selectpicker('val', $scope.AppointmentModel.PurposeToVisit).trigger("change");
 
@@ -2303,7 +2309,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
     $scope.showTable = true;
     $scope.RequestFor = "";
     $scope.DisableSecuirtyCheckMainCOntrolsChecKOut = false;
-    
+
     $scope.RemoteEmployeeModel = {};
     $scope.HcodeAutoCompleteData = [];
     $scope.DisableCOntrolOnEdit = false;
@@ -2312,6 +2318,21 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
     $scope.AccessCardIssueList = [{ text: 'Yes', value: 'Yes' }, { text: 'No', value: 'No' }];
     $scope.AccessCardCollectedList = [{ text: 'Yes', value: 'Yes' }, { text: 'No', value: 'No' }];
     $scope.isSecurityRole = false;
+
+    $scope.getUserDropdown = function () {
+        var response = myService.getUserDropdown();
+
+        response.then(function (res) {
+            $scope.employeeMasterRE = res.data;
+
+        }, function () {
+            aler('Error Occured');
+        })
+    }
+
+    $scope.getUserDropdown();
+
+
     if (localStorage.getItem("RoleName") == "Security") {
         $scope.isSecurityRole = true;
     }
@@ -2327,6 +2348,12 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
             $scope.searchFilter = '';
             $scope.TotalRecords = $scope.data.length;
             $scope.showTable = true;
+            if ($scope.data.length == 0) {
+                $("#noDataFound").css("display", "");
+            }
+            else {
+                $("#noDataFound").css("display", "none");
+            }
 
             $scope.tableParams = new NgTableParams({
                 page: 1,
@@ -2369,7 +2396,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $(".dvCheckinDateTime").find(".bx-calendar").css("display", "");
         $scope.RequestFor = "Edit";
         $scope.DisableCOntrolOnEditAdmin = false;
-        
+
     }
     $scope.clearFormSecurityCheck = function () {
         $scope.RemoteEmployeeSecurityCheck = {};
@@ -2392,11 +2419,11 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $scope.DisableCOntrolOnEdit = false;
         $scope.clearForm();
         $scope.RemoteEmployeeSecurityCheck = {};
-        $scope.RemoteEmployeeModel =
-            $scope.RemoteEmployeeModel.Status = "Open";
+        $scope.RemoteEmployeeModel = {};
+        $scope.RemoteEmployeeModel.Status = "Open";
         $('#exampleModal').modal('show');
         $("#DvRENumber").css("display", "none");
-
+        $scope.RemoteEmployeeModel.ConcernPersonName = localStorage.getItem("UserFullName");
 
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -2434,9 +2461,10 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
 
         $('#RemoteEmployStatus').html('Open');
 
+
     }
     $scope.EditRemoteEmployee = function (Pkey, RequestFor) {
-       
+
         $scope.RequestFor = RequestFor;
         $scope.DisableCOntrolOnEdit = true;
         $scope.DisableCOntrolOnEditAdmin = false;
@@ -2463,7 +2491,9 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeModel.CheckinDateTime = response.data[0].CheckinDateTime;
                     $scope.RemoteEmployeeModel.CheckOutDateTime = response.data[0].CheckOutDateTime;
                     $scope.RemoteEmployeeModel.Status = response.data[0].Status;
+                    $scope.RemoteEmployeeSecurityCheck.ConcernPersonId = response.data[0].ConcernPersonId;
 
+                    $("#ddlEmployee").val(response.data[0].ConcernPersonId);
                     if ($scope.RemoteEmployeeModel.Status == "Open") {
                         //$scope.RequestFor = "Edit";
                     }
@@ -2471,16 +2501,16 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                         $scope.DisableCOntrolOnEditAdmin = true;
                     }
 
-                    if ($scope.RemoteEmployeeModel.Status == "Checked Out" || $scope.RemoteEmployeeModel.Status == "Expired" || $scope.RemoteEmployeeModel.Status=="Check In") {
+                    if ($scope.RemoteEmployeeModel.Status == "Checked Out" || $scope.RemoteEmployeeModel.Status == "Expired" || $scope.RemoteEmployeeModel.Status == "Check In") {
                         $scope.RequestFor = "View";
                         $scope.DisableCOntrolOnEditAdmin = true;
                     }
-                  
+
                     if ($scope.RequestFor == "View" || RequestFor == "View") {
                         $scope.RequestFor = "View";
                         $scope.DisableCOntrolOnEditAdmin = true;
                     }
-                 
+
 
                     $("#CheckOutDateTime").val(response.data[0].CheckOutDateTime);
                     $("#CheckinDateTime").val(response.data[0].CheckinDateTime);
@@ -2502,13 +2532,13 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     }
                     $(".dvCheckinDateTime").find(".bx-calendar").css("display", "none");
                     $(".DvBookForWeekend").css("display", "none");
-                    
+
                     $scope.RemoteEmployeeModel.VehicalNumber = response.data[0].VehicalNumber;
                     $scope.RemoteEmployeeModel.GuestAccessCardIssue = response.data[0].GuestAccessCardIssue;
                     $scope.RemoteEmployeeModel.DeafultGuestCardNumber = response.data[0].DeafultGuestCardNumber;
                     $scope.RemoteEmployeeModel.AccessCardCollectionStatus = response.data[0].AccessCardCollectionStatus;
                     $scope.RemoteEmployeeModel.GuestAccessCardIssue = response.data[0].GuestAccessCardIssue;
-                    
+
                     $("#Hcode_value").prop("disabled", true);
                 }, function () {
                     console.log("Error Occurs");
@@ -2541,8 +2571,12 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         $scope.RemoteEmployeeModel.Comments = $("#Comments").val();
         $scope.RemoteEmployeeModel.Status = $("#TxtStatus").val();
         $scope.RemoteEmployeeModel.BookForWeekend = $("#BookForWeekend").is(':checked');
-
-
+        if (localStorage.getItem("RoleName") == "Security") {
+            $scope.RemoteEmployeeModel.ConcernPersonId = $('#ddlEmployee').val();
+        }
+        else {
+            $scope.RemoteEmployeeModel.ConcernPersonId = localStorage.getItem("UserID");
+        }
 
 
         var response = myService.SaveRemoteEmployee($scope.RemoteEmployeeModel); // get call from service.js
@@ -2608,6 +2642,17 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                         $scope.RemoteEmployeeModel.Status = 'Open';
 
 
+                      
+                        if (localStorage.getItem("RoleName") == "Security") {
+                            $scope.RemoteEmployeeModel.ConcernPersonId = $('#ddlEmployee').val();
+                        }
+                        else {
+                            $scope.RemoteEmployeeModel.ConcernPersonId = localStorage.getItem("UserID");
+                            $scope.RemoteEmployeeModel.ConcernPersonName = localStorage.getItem("UserFullName");
+
+                        }
+
+
                     }, function () {
                         console.log("Error Occurs");
                     });
@@ -2646,10 +2691,10 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
     };
 
 
-    
- 
+
+
     $scope.CancelRemoteEmployee = function () {
-        var response = myService.CancelRemoteEmployee($("#hideenRemoteEmployeeId").val());    
+        var response = myService.CancelRemoteEmployee($("#hideenRemoteEmployeeId").val());
         $scope.getAllRemoteEmployee();
         $("#btnCloseREPopup").click();
     }
@@ -2684,6 +2729,9 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     $scope.RemoteEmployeeSecurityCheck.EmailID = response.data[0].EmailID;
                     $scope.RemoteEmployeeSecurityCheck.CheckinDateTime = response.data[0].CheckinDateTime;
                     $scope.RemoteEmployeeSecurityCheck.CheckOutDateTime = response.data[0].CheckOutDateTime;
+                    $scope.RemoteEmployeeSecurityCheck.ConcernPersonId = response.data[0].ConcernPersonId;
+
+                    $("#ddlEmployee").val(response.data[0].ConcernPersonId);
                     $("#CheckOutDateTimeSc").val(response.data[0].CheckOutDateTime);
                     $("#CheckinDateTimeSc").val(response.data[0].CheckinDateTime);
 
@@ -2705,7 +2753,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     }
 
                     $scope.DisableSecuirtyCheckMainCOntrols = false;
-                    if (response.data[0].Status == "Checked Out") {                      
+                    if (response.data[0].Status == "Checked Out") {
                         $(".dvCheckOutDateTimeSc").find(".bx-calendar").css("display", "none");
                     }
                     else {
@@ -2752,12 +2800,12 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
                     else if (RequestFor == "Checked Out") {
                         $scope.DisableSecuirtyCheckMainCOntrols = true;
                         $scope.DisableSecuirtyCheckMainCOntrolsChecKOut = false;
-                        
+
                         $("#TxtStatusSc").val("Checked Out");
                         $("#btnSaveSecurityCHeck").html("Checked Out");
                         $("#SecurityCheckModelLabel").html("Checked Out");
                     }
-                    
+
                 }, function () {
                     console.log("Error Occurs");
                 });
@@ -2792,7 +2840,7 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         }
         $scope.RemoteEmployeeSecurityCheck.IsVehicalParkedOnPremises = $('#IsVehicalParkedOnPremises').is(':checked');
         $scope.RemoteEmployeeSecurityCheck.VehicalNumber = $('#VehicalNumber').val();
-     
+
 
 
         var response = myService.SaveSecurityCheck($scope.RemoteEmployeeSecurityCheck); // get call from service.js
@@ -2816,6 +2864,11 @@ app.controller("RemoteEmployeeCtrl", function ($scope, $http, myService, $timeou
         })
 
     }
+
+    $scope.$watch(function () {
+        $('#ddlEmployee').selectpicker('refresh');
+    });
+
 
     $scope.getAllRemoteEmployee();
     $scope.HcodeAutoCompleteDataCall("ForAutocomplete");

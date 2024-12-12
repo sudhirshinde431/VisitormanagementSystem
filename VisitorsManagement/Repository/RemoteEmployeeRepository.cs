@@ -29,6 +29,8 @@ namespace VisitorsManagement.Repository
         public async Task<IEnumerable<RemoteEmployee>> getRemoteEmployee(RemoteEmployeeFilter filter)
         {
             DateTime currentDate = DB.getCurrentIndianDate();
+            string ROleName = filter.RoleName;
+            string UserID = filter.UserID;
 
             var sQuery = $@"SELECT
                             Pkey,Hcode,Name,RemoteEmployee.EmailID
@@ -76,6 +78,8 @@ when Status='Checked Out' Then
 Else
 4
 END as SortOrder,
+CONCAT(ISNULL(ConcernPerson.FirstName,''),' ',ISNULL(ConcernPerson.LastName,'')) as ConcernPersonName,
+ConcernPersonId,
  'IsCheckInToday' = CASE WHEN DATEDIFF(DAY, CAST(CheckinDateTime AS DATE), CAST('{currentDate.ToString("dd-MMM-yyyy")}' AS DATE)) = 0 THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END
 
                             FROM [dbo].[RemoteEmployee]
@@ -85,6 +89,9 @@ END as SortOrder,
 							RemoteEmployee.UpdatedBy=UpdatedBy.UserID
                             LEFT JOIN tbl_Users as SecurityCheckDoneBy on
 							RemoteEmployee.UpdatedBy=SecurityCheckDoneBy.UserID
+                            LEFT JOIN tbl_Users as ConcernPerson on
+							RemoteEmployee.ConcernPersonId=ConcernPerson.UserID
+Where (RemoteEmployee.ConcernPersonId='{UserID.ToString()}' OR '{filter.RoleName.ToString()}' in ('Super Admin','Security') )
                              ";
 
 
@@ -108,7 +115,7 @@ END as SortOrder,
             if (!string.IsNullOrEmpty(filter.Pkey))
             {
                 sQuery = $@"SELECT
-                            Pkey,Hcode,Name,EmailID
+                            Pkey,Hcode,Name,RemoteEmployee.EmailID
                             --,Replace(convert(char(11),CheckinDateTime,106),' ', '-') as 'CheckinDateTime'                           
                             --,Replace(convert(char(11),CheckOutDateTime,106),' ', '-') as 'CheckOutDateTime' 
                              ,FORMAT(CheckOutDateTime, 'dd-MMM-yyyy HH:mm') as CheckOutDateTime
@@ -125,8 +132,13 @@ END as SortOrder,
                             ,CreatedBySC
                             ,UpdatedBySC
    ,Status
-,Re_Number
-                            FROM [dbo].[RemoteEmployee]";
+,Re_Number,
+ConcernPersonId,
+CONCAT(ISNULL(ConcernPerson.FirstName,''),' ',ISNULL(ConcernPerson.LastName,'')) as ConcernPersonName
+                            FROM [dbo].[RemoteEmployee]
+   LEFT JOIN tbl_Users as ConcernPerson on
+							RemoteEmployee.ConcernPersonId=ConcernPerson.UserID
+";
                 sQuery = sQuery + $" WHERE Pkey ='" + filter.Pkey + "' ";
 
 
@@ -292,13 +304,17 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
                              ,[Status]
                              ,[Re_Number]
                            ,[CheckOutDateTime],[IsVehicalParkedOnPremises],[VehicalNumber],[Comments],[CreatedBy],[UpdatedBy],
-                            [CreatedDate],[UpdatedDate])
+                            [CreatedDate],[UpdatedDate],
+[ConcernPersonId]
+)
                      VALUES
                            (@Hcode,@Name,@EmailID,@CheckinDateTime,
                             @Status,
                             @Re_Number,
                             @CheckOutDateTime,@IsVehicalParkedOnPremises,@VehicalNumber,@Comments,@CreatedBy,@UpdatedBy,
-                            @CreatedDate,@UpdatedDate); SELECT SCOPE_IDENTITY();";
+                            @CreatedDate,@UpdatedDate,
+@ConcernPersonId
+); SELECT SCOPE_IDENTITY();";
 
                         DynamicParameters param = new DynamicParameters();
                         param.Add("@Hcode", remoteEmployee.Hcode);
@@ -315,6 +331,7 @@ FROM[dbo].[RemoteEmployee] WHERE SUBSTRING(Re_Number,1,4) = @YR";
                         param.Add("@VehicalNumber", remoteEmployee.VehicalNumber);
                         param.Add("@Status", remoteEmployee.Status);
                         param.Add("@Re_Number", @Re_Number.FirstOrDefault());
+                        param.Add("@ConcernPersonId", remoteEmployee.ConcernPersonId);
                         //var result = await _genericRepository.ExecuteCommandAsync(sQuery, param);
                         var result = await _genericRepository.GetAsync<int>(sQuery, param);
                         result.FirstOrDefault();

@@ -40,6 +40,8 @@ namespace VisitorsManagement.Controllers
         {
             try
             {
+                filter.UserID = Convert.ToString(Session["UserID"]);
+                filter.RoleName = Convert.ToString(Session["RoleName"]);
                 var result = await _IRemoteEmployee.getRemoteEmployee(filter);
                 return Json(result);
             }
@@ -57,6 +59,13 @@ namespace VisitorsManagement.Controllers
             ResponseClass clsResponse = new ResponseClass();
             try
             {
+                if (Convert.ToString(Session["RoleName"]) == "Security")
+                {
+                    if (string.IsNullOrEmpty(RemoteEmployeeModel.ConcernPersonId.ToString()) || RemoteEmployeeModel.ConcernPersonId == null || RemoteEmployeeModel.ConcernPersonId == 0)
+                    {
+                        ModelState.AddModelError("ConcernPersonId", "Concern Person is required.");
+                    }
+                }
                 if (ModelState.IsValid)
                 {
 
@@ -64,8 +73,12 @@ namespace VisitorsManagement.Controllers
                     RemoteEmployeeModel.CreatedDate = DateTime.UtcNow.Date.ToString("dd-MMM-yyyy");
                     RemoteEmployeeModel.UpdatedBy = Convert.ToInt32(Session["UserID"]);
                     RemoteEmployeeModel.UpdatedDate = DateTime.UtcNow.Date.ToString("dd-MMM-yyyy");
+                   
+                   
 
-                    var result = await _IRemoteEmployee.SaveRemoteEmployee(RemoteEmployeeModel);
+
+
+                        var result = await _IRemoteEmployee.SaveRemoteEmployee(RemoteEmployeeModel);
 
 
                     if (result > 0)

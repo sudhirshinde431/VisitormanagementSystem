@@ -11,5 +11,8 @@ namespace VisitorsManagement.Models.RemoteEmployee
         public string FilterText { get; set; }
         public string Hcode { get; set; }
         public string ForAutocomplete { get; set; }
+        public string RoleName { get; set; }
+
+        public string UserID { get; set; }
     }
 }

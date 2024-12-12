@@ -164,6 +164,7 @@ namespace VisitorsManagement.Controllers
                                 body = body.Replace("{{VisitTo}}", vM.PersonToVisitName);
                                 body = body.Replace("{{AppointmentNo}}", AppointmentNo);
                                 body = body.Replace("{{BatchNo}}", BatchNo);
+                                body = body.Replace("{{DirectApproval}}", "Yes");
                                 //body = body.Replace("{WebsiteURL}", applicationURL);
 
                                 DB.SendMailAsync(vM.PersonToVisitEmailID + "," + vM.VisitorsEmails, body, DETAILHEADER);
@@ -531,6 +532,8 @@ namespace VisitorsManagement.Controllers
                     string DateDetail = Convert.ToDateTime(vM.strDate).ToString("dd-MMM-yyyy");
                     string RepresentingCompany = vM.RepresentingCompany;
                     string PurposeOfVisit = vM.PurposeToVisit;
+                    string AppointmentNo = vM.AppointmentNo;
+                    string BatchNumber = vM.BatchNumber;
                     //string applicationURL = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
 
                     try
@@ -551,6 +554,8 @@ namespace VisitorsManagement.Controllers
                         body = body.Replace("{{CompanyName}}", RepresentingCompany);
                         body = body.Replace("{{PurposeOfVisit}}", PurposeOfVisit);
                         body = body.Replace("{{VisitTo}}", VisitingPersonName);
+                        body = body.Replace("{{AppointmentNo}}", AppointmentNo);
+                        body = body.Replace("{{BatchNo}}", BatchNumber==null?"": BatchNumber);
                         //body = body.Replace("{WebsiteURL}", applicationURL);
 
                         DB.SendMailAsync(vM.PersonToVisitEmailID, body, "Appointment of Visitor " + vM.VisitorName + " has been Cancelled");

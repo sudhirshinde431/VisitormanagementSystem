@@ -49,8 +49,12 @@ namespace VisitorsManagement.Models.RemoteEmployee
         public string Status { get; set; }
         public string Re_Number { get; set; }
         public bool? IsCheckInToday { get; set; }
-        
 
+        public string ConcernPersonName { get; set; }
+        public Int32 ConcernPersonId { get; set; }
+        public string RoleName { get; set; }
+
+        
         public List<VisitorsManagement.Models.RemoteEmployee.RemoteEmployee> remoteEmployee { get; set; }
     }
 
