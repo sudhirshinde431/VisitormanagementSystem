@@ -29,8 +29,8 @@ namespace VisitorsManagement.Repository
         public async Task<IEnumerable<RemoteEmployee>> getRemoteEmployee(RemoteEmployeeFilter filter)
         {
             DateTime currentDate = DB.getCurrentIndianDate();
-            string ROleName = filter.RoleName;
-            string UserID = filter.UserID;
+            string ROleName = filter.RoleName==null?"" : filter.RoleName;
+            string UserID = filter.UserID == null ? "" : filter.UserID;
 
             var sQuery = $@"SELECT
                             Pkey,Hcode,Name,RemoteEmployee.EmailID

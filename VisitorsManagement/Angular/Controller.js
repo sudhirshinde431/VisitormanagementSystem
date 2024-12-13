@@ -1,5 +1,5 @@
 ﻿
-app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout, Upload, NgTableParams, $window, constants, toaster) {
+app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout, Upload, NgTableParams, $window, constants, toaster, $filter) {
 
 
     $scope.showTable = true;
@@ -13,7 +13,32 @@ app.controller("VisitorsMgmtCtrl", function ($scope, $http, myService, $timeout,
 
 
     // retrieves the min 'id' of a collection, used for the group ordering.
-    // you can use lodash instead. e.g: _.min(arr, 'id') 
+    // you can use lodash instead. e.g: _.min(arr, 'id')
+
+    //$scope.hasMatchingRecords = function (group, searchFilter) {
+
+    //    if (group.data.length > 0) {
+    //        return true;
+    //    }
+    //    else {
+    //        return false;
+    //    }
+
+    //    //console.log(searchFilter);
+    //    //return group.data.some(function (details) {
+    //    //    // Apply your search filter logic here
+    //    //    return $filter('filter')([details], searchFilter).length > 0;
+    //    //});
+    //};
+
+    $scope.hasMatchingRecords = function (group) {
+        return function (searchFilter) {
+            return group.data.some(function (details) {
+                // Apply your search filter logic here
+                return $filter('filter')([details], searchFilter).length > 0;
+            });
+        };
+    }
     $scope.min = function (arr) {
         return $filter('min')
             ($filter('map')(arr, 'id'));

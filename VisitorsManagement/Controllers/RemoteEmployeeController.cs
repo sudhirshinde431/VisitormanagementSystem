@@ -139,6 +139,8 @@ namespace VisitorsManagement.Controllers
 
                         VisitorsManagement.Models.RemoteEmployee.RemoteEmployeeFilter filter = new RemoteEmployeeFilter();
                         filter.Pkey = RemoteEmployeeSecurityCheck.Pkey;
+                        filter.UserID = Convert.ToString(Session["UserID"]);
+                        filter.RoleName = Convert.ToString(Session["RoleName"]);
                         var getRemoteEmployee = await _IRemoteEmployee.getRemoteEmployee(filter);
                         string body = string.Empty;
                         using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/EmailTemplate/RemoteEmployeeAccessCardNo.html")))
