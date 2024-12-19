@@ -44,7 +44,7 @@ namespace VisitorsManagement.Models
         [EmailAddress(ErrorMessage = "Invalid Email Id")]
         public string VisitorsEmails { get; set; }
 
-       // [Required(ErrorMessage = "Number Of Person's is required")]
+        [Required(ErrorMessage = "Number Of Person's is required")]
         public int? NumberOfPerson { get; set; }
         public string Remark { get; set; }
         //public string VehicleDetails { get; set; }
